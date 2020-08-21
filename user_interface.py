@@ -9,17 +9,18 @@ class EditEntry(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setMinimumWidth(350)
+        self.setMinimumWidth(200)
+        self.setMaximumWidth(400)
 
         sp_retain = QtWidgets.QSizePolicy()
         sp_retain.setRetainSizeWhenHidden(True)
+        sp_retain.setHorizontalPolicy(QtWidgets.QSizePolicy.Expanding)
 
         # Define wideget elements
         headline_label = QtWidgets.QLabel("Eintrag bearbeiten")
         headline_label.setAlignment(QtCore.Qt.AlignLeft)
         headline_label.setFont(QtGui.QFont('SansSerif',pointSize=20))
         headline_label.setSizePolicy(sp_retain)
-        # headline_label.setStyleSheet("QWidget { font: 25px}")
 
         # Work Date
         date_label = QtWidgets.QLabel("Datum:")
@@ -31,7 +32,7 @@ class EditEntry(QtWidgets.QWidget):
         # date_textbox.setMaximumWidth()
         date_textbox.setAlignment(QtCore.Qt.AlignCenter)
         date_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        date_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
+        # date_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
         date_textbox.setSizePolicy(sp_retain)
         
 
@@ -44,7 +45,7 @@ class EditEntry(QtWidgets.QWidget):
         start_time_textbox = QtWidgets.QLineEdit()
         start_time_textbox.setAlignment(QtCore.Qt.AlignCenter)
         start_time_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        start_time_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
+        # start_time_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
         start_time_textbox.setSizePolicy(sp_retain)
 
         # Work end time
@@ -56,10 +57,9 @@ class EditEntry(QtWidgets.QWidget):
         end_time_textbox = QtWidgets.QLineEdit()
         end_time_textbox.setAlignment(QtCore.Qt.AlignCenter)
         end_time_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        end_time_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
-        end_time_textbox.setSizePolicy(sp_retain)
+        # end_time_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
+        # end_time_textbox.setSizePolicy(sp_retain)
 
-        
 
         # Buttons
         accept_button = QtWidgets.QPushButton("Ok")
@@ -80,27 +80,6 @@ class EditEntry(QtWidgets.QWidget):
         # self.vscroll_layout.setAlignment(QtCore.Qt.AlignRight)
 
               
-        scroll_area_content = QtWidgets.QWidget()
-        scroll_area_content.setLayout(self.vscroll_layout)
-        scroll_area = QtWidgets.QScrollArea()
-
-        scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(scroll_area_content)
-        scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
-
-        self.vscroll_layout.addWidget(headline_label,0,0,1,7)
-        self.vscroll_layout.addWidget(date_label,1,0,1,5)
-        self.vscroll_layout.addWidget(date_textbox,2,2,1,3)
-        self.vscroll_layout.addWidget(start_time_label,3,0,1,5)
-        self.vscroll_layout.addWidget(start_time_textbox,4,2,1,3)
-        self.vscroll_layout.addWidget(end_time_label,5,0,1,5)
-        self.vscroll_layout.addWidget(end_time_textbox,6,2,1,3)
-        
-        # self.vscroll_layout.setSpacing(0)
-        # self.vscroll_layout.setMargin(0)
-        # self.vscroll_layout.setContentsMargins(0,0,0,0)
 
        
 
@@ -109,7 +88,7 @@ class EditEntry(QtWidgets.QWidget):
         self.fold_button.setStyleSheet("QToolButton { border: none; }")
         self.fold_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.fold_button.setArrowType(QtCore.Qt.RightArrow)
-        self.fold_button.setText("Erweitert")
+        # self.fold_button.setText("Erweitert")
         self.fold_button.setCheckable(True)
         self.fold_button.setChecked(False)
 
@@ -184,22 +163,48 @@ class EditEntry(QtWidgets.QWidget):
         self.author_text.setFont(QtGui.QFont('SansSerif',pointSize=16))
         self.author_text.setReadOnly(True)
         self.author_text.setSizePolicy(sp_retain)
+
+
+        scroll_area_content = QtWidgets.QWidget()
+        scroll_area_content.setLayout(self.vscroll_layout)
+        scroll_area = QtWidgets.QScrollArea()
+
+        scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(scroll_area_content)
+        scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
+
+        label_h_begin = 0
+        label_h_length = 2
+
+        textbox_h_begin = 2
+        textbox_h_length = 1
+
+        self.vscroll_layout.addWidget(headline_label,0,0,1,3)
+        self.vscroll_layout.addWidget(date_label,1,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(date_textbox,2,textbox_h_begin,1,textbox_h_length)
+        self.vscroll_layout.addWidget(start_time_label,3,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(start_time_textbox,4,textbox_h_begin,1,textbox_h_length)
+        self.vscroll_layout.addWidget(end_time_label,5,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(end_time_textbox,6,textbox_h_begin,1,textbox_h_length)
+        
         
         self.vscroll_layout.addWidget(self.fold_button,7,0,1,1)
-        self.vscroll_layout.addWidget(self.fold_line,7,1,1,4)
+        self.vscroll_layout.addWidget(self.fold_line,7,1,1,2)
         
-        self.vscroll_layout.addWidget(self.vacation_label,8,0,1,3)
-        self.vscroll_layout.addWidget(self.vacation_checkbox,8,4,1,1)
-        self.vscroll_layout.addWidget(self.comment_label,9,0,1,5)
-        self.vscroll_layout.addWidget(self.comment_textbox,10,0,2,5)
-        self.vscroll_layout.addWidget(self.wage_label,12,0,1,5)
-        self.vscroll_layout.addWidget(self.wage_textbox,13,2,1,3)
-        self.vscroll_layout.addWidget(self.creation_date_label,14,0,1,5)
-        self.vscroll_layout.addWidget(self.creation_date_text,15,2,1,3)
-        self.vscroll_layout.addWidget(self.modification_date_label,16,0,1,5)
-        self.vscroll_layout.addWidget(self.modification_date_text,17,2,1,3)        
-        self.vscroll_layout.addWidget(self.author_label,18,0,1,5)
-        self.vscroll_layout.addWidget(self.author_text,19,2,1,3)  
+        self.vscroll_layout.addWidget(self.vacation_label,8,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(self.vacation_checkbox,8,2,1,1)
+        self.vscroll_layout.addWidget(self.comment_label,9,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(self.comment_textbox,10,0,2,3)
+        self.vscroll_layout.addWidget(self.wage_label,12,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(self.wage_textbox,13,textbox_h_begin,1,textbox_h_length)
+        self.vscroll_layout.addWidget(self.creation_date_label,14,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(self.creation_date_text,15,textbox_h_begin,1,textbox_h_length)
+        self.vscroll_layout.addWidget(self.modification_date_label,16,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(self.modification_date_text,17,textbox_h_begin,1,textbox_h_length)        
+        self.vscroll_layout.addWidget(self.author_label,18,label_h_begin,1,label_h_length)
+        self.vscroll_layout.addWidget(self.author_text,19,textbox_h_begin,1,textbox_h_length)  
 
         # self.bottom_space = QtWidgets.QSpacerItem(0,1)
         # self.vscroll_layout.addItem(self.bottom_space)
@@ -220,11 +225,9 @@ class EditEntry(QtWidgets.QWidget):
         button_layout.addWidget(delete_button)
         button_layout.addWidget(deny_button)
 
-        self.space = QtWidgets.QSpacerItem(0,0)
-
         widget_content = QtWidgets.QVBoxLayout()
         widget_content.addWidget(scroll_area)
-        # widget_content.addSpacerItem(self.space)
+        widget_content.addSpacing(30)
         widget_content.addWidget(button_line)
         widget_content.addLayout(button_layout)
 
@@ -285,8 +288,8 @@ class MainWindow(QtWidgets.QMainWindow):
         edit_entry_widget = EditEntry()
 
         layout = QtWidgets.QHBoxLayout()
-        layout.addWidget(QtWidgets.QPushButton(), stretch=3)
-        layout.addWidget(edit_entry_widget, stretch=1)
+        layout.addWidget(QtWidgets.QPushButton(), stretch=8)
+        layout.addWidget(edit_entry_widget, stretch=3)
 
 
         window_content = QtWidgets.QWidget()
