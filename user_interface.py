@@ -39,15 +39,18 @@ class EditEntry(QtWidgets.QWidget):
 
         # Work Date
         date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
-        date_textbox = set_default_field_style(QtWidgets.QLineEdit())
+        date_field = set_default_field_style(QtWidgets.QDateEdit())
+        date_field.setDisplayFormat('dd.MM.yyyy ')
+        date_field.setDate(QtCore.QDate.currentDate())
+        date_field.setCalendarPopup(True)
         
         # Work start time
         start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
-        start_time_textbox = set_default_field_style(QtWidgets.QLineEdit())
-        
+        start_time_field = set_default_field_style(QtWidgets.QTimeEdit())
+               
         # Work end time
         end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
-        end_time_textbox = set_default_field_style(QtWidgets.QLineEdit())
+        end_time_field = set_default_field_style(QtWidgets.QTimeEdit())
 
         # Spoiler Button and Line
         self.fold_button = QtWidgets.QToolButton()
@@ -76,22 +79,26 @@ class EditEntry(QtWidgets.QWidget):
 
         # Wage
         self.wage_label = set_default_label_style(QtWidgets.QLabel("Stundenlohn:"))
-        self.wage_textbox = set_default_field_style(QtWidgets.QLineEdit("10,00 €"))
+        self.wage_textbox = set_default_field_style(QtWidgets.QLineEdit("10,00"))
+        self.wage_textbox.setInputMask('09,99 €')
         
         # creation date
         self.creation_date_label = set_default_label_style(QtWidgets.QLabel("Erstelldatum:"))
         self.creation_date_text = set_default_field_style(QtWidgets.QLineEdit("18.08.2020"))
         self.creation_date_text.setReadOnly(True)
+        self.creation_date_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
         # modification date
         self.modification_date_label = set_default_label_style(QtWidgets.QLabel("Änderungsdatum:"))
         self.modification_date_text = set_default_field_style(QtWidgets.QLineEdit("19.08.2020"))
         self.modification_date_text.setReadOnly(True)
+        self.modification_date_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
         # author
         self.author_label = set_default_label_style(QtWidgets.QLabel("Autor:"))
         self.author_text = set_default_field_style(QtWidgets.QLineEdit("Jordan"))
         self.author_text.setReadOnly(True)
+        self.author_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
         # Buttons
         accept_button = QtWidgets.QPushButton("Ok")
@@ -126,13 +133,13 @@ class EditEntry(QtWidgets.QWidget):
         self.add_to_grid(headline_label, horizontal_start=0, horizontal_length=3)
 
         self.add_to_grid(date_label, 'Label')
-        self.add_to_grid(date_textbox, 'Field')
+        self.add_to_grid(date_field, 'Field')
 
         self.add_to_grid(start_time_label, 'Label')
-        self.add_to_grid(start_time_textbox, 'Field')
+        self.add_to_grid(start_time_field, 'Field')
 
         self.add_to_grid(end_time_label, 'Label')
-        self.add_to_grid(end_time_textbox, 'Field')
+        self.add_to_grid(end_time_field, 'Field')
         
         self.add_to_grid(self.fold_button, horizontal_start=0, horizontal_length=1)
         self.add_to_grid(self.fold_line, vertical_start=self.grid_v_pos-1, horizontal_start=1, horizontal_length=2)
@@ -164,7 +171,6 @@ class EditEntry(QtWidgets.QWidget):
         widget_line.setFrameShape(QtWidgets.QFrame.VLine)
         widget_line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
-        
         # Button Area
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.addWidget(accept_button)
