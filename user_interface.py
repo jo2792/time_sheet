@@ -121,35 +121,39 @@ class EditEntry(QtWidgets.QWidget):
         scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
 
         # Add widgets to Grid
-        label_h_begin = 0
-        label_h_length = 2
+        self.grid_v_pos = 0
 
-        textbox_h_begin = 2
-        textbox_h_length = 1
+        self.add_to_grid(headline_label, horizontal_start=0, horizontal_length=3)
 
-        self.vscroll_layout.addWidget(headline_label,0,0,1,3)
-        self.vscroll_layout.addWidget(date_label,1,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(date_textbox,2,textbox_h_begin,1,textbox_h_length)
-        self.vscroll_layout.addWidget(start_time_label,3,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(start_time_textbox,4,textbox_h_begin,1,textbox_h_length)
-        self.vscroll_layout.addWidget(end_time_label,5,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(end_time_textbox,6,textbox_h_begin,1,textbox_h_length)
+        self.add_to_grid(date_label, 'Label')
+        self.add_to_grid(date_textbox, 'Field')
+
+        self.add_to_grid(start_time_label, 'Label')
+        self.add_to_grid(start_time_textbox, 'Field')
+
+        self.add_to_grid(end_time_label, 'Label')
+        self.add_to_grid(end_time_textbox, 'Field')
         
-        self.vscroll_layout.addWidget(self.fold_button,7,0,1,1)
-        self.vscroll_layout.addWidget(self.fold_line,7,1,1,2)
+        self.add_to_grid(self.fold_button, horizontal_start=0, horizontal_length=1)
+        self.add_to_grid(self.fold_line, vertical_start=self.grid_v_pos-1, horizontal_start=1, horizontal_length=2)
         
-        self.vscroll_layout.addWidget(self.vacation_label,8,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(self.vacation_checkbox,8,2,1,1)
-        self.vscroll_layout.addWidget(self.comment_label,9,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(self.comment_textbox,10,0,2,3)
-        self.vscroll_layout.addWidget(self.wage_label,12,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(self.wage_textbox,13,textbox_h_begin,1,textbox_h_length)
-        self.vscroll_layout.addWidget(self.creation_date_label,14,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(self.creation_date_text,15,textbox_h_begin,1,textbox_h_length)
-        self.vscroll_layout.addWidget(self.modification_date_label,16,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(self.modification_date_text,17,textbox_h_begin,1,textbox_h_length)        
-        self.vscroll_layout.addWidget(self.author_label,18,label_h_begin,1,label_h_length)
-        self.vscroll_layout.addWidget(self.author_text,19,textbox_h_begin,1,textbox_h_length)  
+        self.add_to_grid(self.vacation_label, 'Label')
+        self.add_to_grid(self.vacation_checkbox, vertical_start=self.grid_v_pos-1, horizontal_start=2, horizontal_length=1)
+
+        self.add_to_grid(self.comment_label, 'Label')
+        self.add_to_grid(self.comment_textbox, vertical_length=2, horizontal_start=0, horizontal_length=3)
+        
+        self.add_to_grid(self.wage_label, 'Label')
+        self.add_to_grid(self.wage_textbox, 'Field')
+
+        self.add_to_grid(self.creation_date_label, 'Label')
+        self.add_to_grid(self.creation_date_text, 'Field')
+
+        self.add_to_grid(self.modification_date_label, 'Label')
+        self.add_to_grid(self.modification_date_text, 'Field')
+
+        self.add_to_grid(self.author_label, 'Label')
+        self.add_to_grid(self.author_text, 'Field')
 
         # Seperation line
         button_line = QtWidgets.QFrame()
@@ -183,6 +187,28 @@ class EditEntry(QtWidgets.QWidget):
 
         self.change_visibility()
 
+    def add_to_grid(self, widget, configuration=None, vertical_start=None,
+                    horizontal_start=None, vertical_length=None, horizontal_length=None):
+        if configuration == "Label":
+            horizontal_start = 0
+            horizontal_length = 2
+            vertical_start = self.grid_v_pos
+            vertical_length = 1
+        elif configuration == "Field":
+            horizontal_start = 2
+            horizontal_length = 1
+            vertical_start = self.grid_v_pos
+            vertical_length = 1
+
+        if not vertical_start:
+            vertical_start = self.grid_v_pos
+
+        if not vertical_length:
+            vertical_length = 1
+        
+        self.vscroll_layout.addWidget(widget, vertical_start, horizontal_start, vertical_length, horizontal_length)
+
+        self.grid_v_pos += vertical_length + vertical_start - self.grid_v_pos
 
     def change_visibility(self):
         changing_widgets = [self.vacation_label, self.vacation_checkbox,
