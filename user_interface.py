@@ -27,7 +27,9 @@ class EditEntry(QtWidgets.QWidget):
 
             return widget
 
-        # Define wideget elements
+        ### Define wideget elements
+
+        # Headline
         headline_label = QtWidgets.QLabel("Eintrag bearbeiten")
         headline_label.setAlignment(QtCore.Qt.AlignLeft)
         font = QtGui.QFont('SansSerif',pointSize=20)
@@ -37,20 +39,17 @@ class EditEntry(QtWidgets.QWidget):
 
         # Work Date
         date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
-        
         date_textbox = set_default_field_style(QtWidgets.QLineEdit())
         
         # Work start time
         start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
-        
         start_time_textbox = set_default_field_style(QtWidgets.QLineEdit())
         
         # Work end time
         end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
-        
         end_time_textbox = set_default_field_style(QtWidgets.QLineEdit())
 
-        # Spoiler
+        # Spoiler Button and Line
         self.fold_button = QtWidgets.QToolButton()
         self.fold_button.setStyleSheet("QToolButton { border: none; }")
         self.fold_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
@@ -65,53 +64,34 @@ class EditEntry(QtWidgets.QWidget):
 
         # Vacation
         self.vacation_label = set_default_label_style(QtWidgets.QLabel("Urlaub:"))
-
         self.vacation_checkbox = QtWidgets.QCheckBox()
         self.vacation_checkbox.setSizePolicy(sp_retain)
         
-        # Comment
+        # Comment box
         self.comment_label = set_default_label_style(QtWidgets.QLabel("Kommentar:"))
-
         self.comment_textbox = QtWidgets.QTextEdit()
         self.comment_textbox.setAlignment(QtCore.Qt.AlignLeft)
         self.comment_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
         self.comment_textbox.setSizePolicy(sp_retain)
 
-        # wage
+        # Wage
         self.wage_label = set_default_label_style(QtWidgets.QLabel("Stundenlohn:"))
-
         self.wage_textbox = set_default_field_style(QtWidgets.QLineEdit("10,00 €"))
         
         # creation date
         self.creation_date_label = set_default_label_style(QtWidgets.QLabel("Erstelldatum:"))
-
         self.creation_date_text = set_default_field_style(QtWidgets.QLineEdit("18.08.2020"))
         self.creation_date_text.setReadOnly(True)
 
         # modification date
         self.modification_date_label = set_default_label_style(QtWidgets.QLabel("Änderungsdatum:"))
-        
         self.modification_date_text = set_default_field_style(QtWidgets.QLineEdit("19.08.2020"))
         self.modification_date_text.setReadOnly(True)
 
         # author
         self.author_label = set_default_label_style(QtWidgets.QLabel("Autor:"))
-
         self.author_text = set_default_field_style(QtWidgets.QLineEdit("Jordan"))
         self.author_text.setReadOnly(True)
-        
-        #Scroll Area
-        self.vscroll_layout = QtWidgets.QGridLayout()
-
-        scroll_area_content = QtWidgets.QWidget()
-        scroll_area_content.setLayout(self.vscroll_layout)
-        scroll_area = QtWidgets.QScrollArea()
-
-        scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(scroll_area_content)
-        scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
 
         # Buttons
         accept_button = QtWidgets.QPushButton("Ok")
@@ -125,7 +105,22 @@ class EditEntry(QtWidgets.QWidget):
         deny_button = QtWidgets.QPushButton("Nop")
         deny_button.setFont(QtGui.QFont('SansSerif',pointSize=16))
         deny_button.setFixedHeight(40)
+        
+        # Layout managment
+        # Scroll Area
+        self.vscroll_layout = QtWidgets.QGridLayout()
 
+        scroll_area_content = QtWidgets.QWidget()
+        scroll_area_content.setLayout(self.vscroll_layout)
+        scroll_area = QtWidgets.QScrollArea()
+
+        scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(scroll_area_content)
+        scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
+
+        # Add widgets to Grid
         label_h_begin = 0
         label_h_length = 2
 
@@ -155,9 +150,6 @@ class EditEntry(QtWidgets.QWidget):
         self.vscroll_layout.addWidget(self.modification_date_text,17,textbox_h_begin,1,textbox_h_length)        
         self.vscroll_layout.addWidget(self.author_label,18,label_h_begin,1,label_h_length)
         self.vscroll_layout.addWidget(self.author_text,19,textbox_h_begin,1,textbox_h_length)  
-
-        # self.bottom_space = QtWidgets.QSpacerItem(0,1)
-        # self.vscroll_layout.addItem(self.bottom_space)
 
         # Seperation line
         button_line = QtWidgets.QFrame()
@@ -193,44 +185,23 @@ class EditEntry(QtWidgets.QWidget):
 
 
     def change_visibility(self):
-        print("Test")
+        changing_widgets = [self.vacation_label, self.vacation_checkbox,
+                            self.comment_label,  self.comment_textbox,
+                            self.wage_label, self.wage_textbox,
+                            self.creation_date_label, self.creation_date_text,
+                            self.modification_date_label, self.modification_date_text,
+                            self.author_label, self.author_text]
 
         if self.fold_button.arrowType() == QtCore.Qt.RightArrow:
+            print("Debug: Open advanced entry settings.")
             self.fold_button.setArrowType(QtCore.Qt.DownArrow)
-
-            print("Test2")
-    
-            self.vacation_label.show()
-            self.vacation_checkbox.show()
-            self.comment_label.show()
-            self.comment_textbox.show()
-            self.wage_label.show()
-            self.wage_textbox.show()
-            self.creation_date_label.show()
-            self.creation_date_text.show()
-            self.modification_date_label.show()
-            self.modification_date_text.show()
-            self.author_label.show()
-            self.author_text.show()
+            for widget in changing_widgets: widget.show()
 
         elif self.fold_button.arrowType() == QtCore.Qt.DownArrow:
-            # self.space.changeSize(10,700)
+            print("Debug: Close advanced entry settings.")
             self.fold_button.setArrowType(QtCore.Qt.RightArrow)
-            print("Test3")
-            self.vacation_label.hide()
-            self.vacation_checkbox.hide()
-            self.comment_label.hide()
-            self.comment_textbox.hide()
-            self.wage_label.hide()
-            self.wage_textbox.hide()
-            self.creation_date_label.hide()
-            self.creation_date_text.hide()
-            self.modification_date_label.hide()
-            self.modification_date_text.hide()
-            self.author_label.hide()
-            self.author_text.hide()
+            for widget in changing_widgets: widget.hide()
         
-
 
 
 class MainWindow(QtWidgets.QMainWindow):
