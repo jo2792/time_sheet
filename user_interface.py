@@ -9,57 +9,109 @@ class EditEntry(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setMinimumWidth(200)
-        self.setMaximumWidth(400)
-
         sp_retain = QtWidgets.QSizePolicy()
         sp_retain.setRetainSizeWhenHidden(True)
         sp_retain.setHorizontalPolicy(QtWidgets.QSizePolicy.Expanding)
 
+        def set_default_label_style(widget):
+            widget.setSizePolicy(sp_retain)
+            widget.setAlignment(QtCore.Qt.AlignLeft)
+            widget.setFont(QtGui.QFont('SansSerif',pointSize=16))
+
+            return widget
+
+        def set_default_field_style(widget):
+            widget.setSizePolicy(sp_retain)
+            widget.setAlignment(QtCore.Qt.AlignCenter)
+            widget.setFont(QtGui.QFont('SansSerif',pointSize=16))
+
+            return widget
+
         # Define wideget elements
         headline_label = QtWidgets.QLabel("Eintrag bearbeiten")
         headline_label.setAlignment(QtCore.Qt.AlignLeft)
-        headline_label.setFont(QtGui.QFont('SansSerif',pointSize=20))
+        font = QtGui.QFont('SansSerif',pointSize=20)
+        font.setUnderline(True)
+        headline_label.setFont(font)
         headline_label.setSizePolicy(sp_retain)
 
         # Work Date
-        date_label = QtWidgets.QLabel("Datum:")
-        date_label.setAlignment(QtCore.Qt.AlignLeft)
-        date_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        date_label.setSizePolicy(sp_retain)
-
-        date_textbox = QtWidgets.QLineEdit()
-        # date_textbox.setMaximumWidth()
-        date_textbox.setAlignment(QtCore.Qt.AlignCenter)
-        date_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        # date_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
-        date_textbox.setSizePolicy(sp_retain)
+        date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
         
-
+        date_textbox = set_default_field_style(QtWidgets.QLineEdit())
+        
         # Work start time
-        start_time_label = QtWidgets.QLabel("Beginn:")
-        start_time_label.setAlignment(QtCore.Qt.AlignLeft)
-        start_time_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        start_time_label.setSizePolicy(sp_retain)
-
-        start_time_textbox = QtWidgets.QLineEdit()
-        start_time_textbox.setAlignment(QtCore.Qt.AlignCenter)
-        start_time_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        # start_time_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
-        start_time_textbox.setSizePolicy(sp_retain)
-
+        start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
+        
+        start_time_textbox = set_default_field_style(QtWidgets.QLineEdit())
+        
         # Work end time
-        end_time_label = QtWidgets.QLabel("Ende:")
-        end_time_label.setAlignment(QtCore.Qt.AlignLeft)
-        end_time_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        end_time_label.setSizePolicy(sp_retain)
+        end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
+        
+        end_time_textbox = set_default_field_style(QtWidgets.QLineEdit())
 
-        end_time_textbox = QtWidgets.QLineEdit()
-        end_time_textbox.setAlignment(QtCore.Qt.AlignCenter)
-        end_time_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        # end_time_textbox.setContentsMargins(QtCore.QMargins(150,0,10,0))
-        # end_time_textbox.setSizePolicy(sp_retain)
+        # Spoiler
+        self.fold_button = QtWidgets.QToolButton()
+        self.fold_button.setStyleSheet("QToolButton { border: none; }")
+        self.fold_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.fold_button.setArrowType(QtCore.Qt.DownArrow)
+        # self.fold_button.setText("Erweitert")
+        self.fold_button.setCheckable(True)
+        self.fold_button.setChecked(False)
 
+        self.fold_line = QtWidgets.QFrame()
+        self.fold_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.fold_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+
+        # Vacation
+        self.vacation_label = set_default_label_style(QtWidgets.QLabel("Urlaub:"))
+
+        self.vacation_checkbox = QtWidgets.QCheckBox()
+        self.vacation_checkbox.setSizePolicy(sp_retain)
+        
+        # Comment
+        self.comment_label = set_default_label_style(QtWidgets.QLabel("Kommentar:"))
+
+        self.comment_textbox = QtWidgets.QTextEdit()
+        self.comment_textbox.setAlignment(QtCore.Qt.AlignLeft)
+        self.comment_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
+        self.comment_textbox.setSizePolicy(sp_retain)
+
+        # wage
+        self.wage_label = set_default_label_style(QtWidgets.QLabel("Stundenlohn:"))
+
+        self.wage_textbox = set_default_field_style(QtWidgets.QLineEdit("10,00 €"))
+        
+        # creation date
+        self.creation_date_label = set_default_label_style(QtWidgets.QLabel("Erstelldatum:"))
+
+        self.creation_date_text = set_default_field_style(QtWidgets.QLineEdit("18.08.2020"))
+        self.creation_date_text.setReadOnly(True)
+
+        # modification date
+        self.modification_date_label = set_default_label_style(QtWidgets.QLabel("Änderungsdatum:"))
+        
+        self.modification_date_text = set_default_field_style(QtWidgets.QLineEdit("19.08.2020"))
+        self.modification_date_text.setReadOnly(True)
+
+        # author
+        self.author_label = set_default_label_style(QtWidgets.QLabel("Autor:"))
+
+        self.author_text = set_default_field_style(QtWidgets.QLineEdit("Jordan"))
+        self.author_text.setReadOnly(True)
+        
+        #Scroll Area
+        self.vscroll_layout = QtWidgets.QGridLayout()
+
+        scroll_area_content = QtWidgets.QWidget()
+        scroll_area_content.setLayout(self.vscroll_layout)
+        scroll_area = QtWidgets.QScrollArea()
+
+        scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(scroll_area_content)
+        scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
 
         # Buttons
         accept_button = QtWidgets.QPushButton("Ok")
@@ -74,107 +126,6 @@ class EditEntry(QtWidgets.QWidget):
         deny_button.setFont(QtGui.QFont('SansSerif',pointSize=16))
         deny_button.setFixedHeight(40)
 
-        #Scroll Area
-        self.vscroll_layout = QtWidgets.QGridLayout()
-
-        # self.vscroll_layout.setAlignment(QtCore.Qt.AlignRight)
-
-              
-
-       
-
-        # Spoiler
-        self.fold_button = QtWidgets.QToolButton()
-        self.fold_button.setStyleSheet("QToolButton { border: none; }")
-        self.fold_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
-        self.fold_button.setArrowType(QtCore.Qt.RightArrow)
-        # self.fold_button.setText("Erweitert")
-        self.fold_button.setCheckable(True)
-        self.fold_button.setChecked(False)
-
-        self.fold_line = QtWidgets.QFrame()
-        self.fold_line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.fold_line.setFrameShadow(QtWidgets.QFrame.Sunken)
-
-        # Vacation
-          
-        self.vacation_label = QtWidgets.QLabel("Urlaub:")
-        self.vacation_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.vacation_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.vacation_label.setSizePolicy(sp_retain)
-
-        self.vacation_checkbox = QtWidgets.QCheckBox()
-        self.vacation_checkbox.setSizePolicy(sp_retain)
-        
-        # Comment
-        self.comment_label = QtWidgets.QLabel("Kommentar:")
-        self.comment_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.comment_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.comment_label.setSizePolicy(sp_retain)
-
-        self.comment_textbox = QtWidgets.QTextEdit()
-        self.comment_textbox.setAlignment(QtCore.Qt.AlignLeft)
-        self.comment_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.comment_textbox.setSizePolicy(sp_retain)
-
-        # wage
-        self.wage_label = QtWidgets.QLabel("Stundenlohn:")
-        self.wage_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.wage_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.wage_label.setSizePolicy(sp_retain)
-
-        self.wage_textbox = QtWidgets.QLineEdit("10,00 €")
-        self.wage_textbox.setAlignment(QtCore.Qt.AlignCenter)
-        self.wage_textbox.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.wage_textbox.setSizePolicy(sp_retain)
-        
-        # creation date
-        self.creation_date_label = QtWidgets.QLabel("Erstelldatum:")
-        self.creation_date_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.creation_date_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.creation_date_label.setSizePolicy(sp_retain)
-
-        self.creation_date_text = QtWidgets.QLineEdit("18.08.2020")
-        self.creation_date_text.setAlignment(QtCore.Qt.AlignCenter)
-        self.creation_date_text.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.creation_date_text.setReadOnly(True)
-        self.creation_date_text.setSizePolicy(sp_retain)
-
-        # modification date
-        self.modification_date_label = QtWidgets.QLabel("Änderungsdatum:")
-        self.modification_date_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.modification_date_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.modification_date_label.setSizePolicy(sp_retain)
-
-        self.modification_date_text = QtWidgets.QLineEdit("19.08.2020")
-        self.modification_date_text.setAlignment(QtCore.Qt.AlignCenter)
-        self.modification_date_text.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.modification_date_text.setReadOnly(True)
-        self.modification_date_text.setSizePolicy(sp_retain)
-
-        # author
-        self.author_label = QtWidgets.QLabel("Autor:")
-        self.author_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.author_label.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.author_label.setSizePolicy(sp_retain)
-
-        self.author_text = QtWidgets.QLineEdit("Jordan")
-        self.author_text.setAlignment(QtCore.Qt.AlignCenter)
-        self.author_text.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        self.author_text.setReadOnly(True)
-        self.author_text.setSizePolicy(sp_retain)
-
-
-        scroll_area_content = QtWidgets.QWidget()
-        scroll_area_content.setLayout(self.vscroll_layout)
-        scroll_area = QtWidgets.QScrollArea()
-
-        scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(scroll_area_content)
-        scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
-
         label_h_begin = 0
         label_h_length = 2
 
@@ -188,7 +139,6 @@ class EditEntry(QtWidgets.QWidget):
         self.vscroll_layout.addWidget(start_time_textbox,4,textbox_h_begin,1,textbox_h_length)
         self.vscroll_layout.addWidget(end_time_label,5,label_h_begin,1,label_h_length)
         self.vscroll_layout.addWidget(end_time_textbox,6,textbox_h_begin,1,textbox_h_length)
-        
         
         self.vscroll_layout.addWidget(self.fold_button,7,0,1,1)
         self.vscroll_layout.addWidget(self.fold_line,7,1,1,2)
@@ -208,7 +158,7 @@ class EditEntry(QtWidgets.QWidget):
 
         # self.bottom_space = QtWidgets.QSpacerItem(0,1)
         # self.vscroll_layout.addItem(self.bottom_space)
-        
+
         # Seperation line
         button_line = QtWidgets.QFrame()
         button_line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -237,10 +187,12 @@ class EditEntry(QtWidgets.QWidget):
 
         self.setLayout(widget_layout)
 
-        self.fold_button.clicked.connect(self.hide)
+        self.fold_button.clicked.connect(self.change_visibility)
+
+        self.change_visibility()
 
 
-    def hide(self):
+    def change_visibility(self):
         print("Test")
 
         if self.fold_button.arrowType() == QtCore.Qt.RightArrow:
@@ -286,10 +238,12 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
 
         edit_entry_widget = EditEntry()
+        edit_entry_widget.setMinimumWidth(400)
+        edit_entry_widget.setMaximumWidth(450)
 
         layout = QtWidgets.QHBoxLayout()
-        layout.addWidget(QtWidgets.QPushButton(), stretch=8)
-        layout.addWidget(edit_entry_widget, stretch=3)
+        layout.addWidget(QtWidgets.QPushButton())#, stretch=8)
+        layout.addWidget(edit_entry_widget)#, stretch=3)
 
 
         window_content = QtWidgets.QWidget()
