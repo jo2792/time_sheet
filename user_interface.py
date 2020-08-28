@@ -30,27 +30,27 @@ class EditEntry(QtWidgets.QWidget):
         ### Define wideget elements
 
         # Headline
-        headline_label = QtWidgets.QLabel("Eintrag bearbeiten")
-        headline_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.headline_label = QtWidgets.QLabel("Eintrag bearbeiten")
+        self.headline_label.setAlignment(QtCore.Qt.AlignLeft)
         font = QtGui.QFont('SansSerif',pointSize=20)
         font.setUnderline(True)
-        headline_label.setFont(font)
-        headline_label.setSizePolicy(sp_retain)
+        self.headline_label.setFont(font)
+        self.headline_label.setSizePolicy(sp_retain)
 
         # Work Date
-        date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
-        date_field = set_default_field_style(QtWidgets.QDateEdit())
-        date_field.setDisplayFormat('dd.MM.yyyy ')
-        date_field.setDate(QtCore.QDate.currentDate())
-        date_field.setCalendarPopup(True)
+        self.date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
+        self.date_field = set_default_field_style(QtWidgets.QDateEdit())
+        self.date_field.setDisplayFormat('dd.MM.yyyy ')
+        self.date_field.setDate(QtCore.QDate.currentDate())
+        self.date_field.setCalendarPopup(True)
         
         # Work start time
-        start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
-        start_time_field = set_default_field_style(QtWidgets.QTimeEdit())
-        # start_time_label.setMinimumSize()
+        self.start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
+        self.start_time_field = set_default_field_style(QtWidgets.QTimeEdit())
+        # self.start_time_label.setMinimumSize()
         # Work end time
-        end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
-        end_time_field = set_default_field_style(QtWidgets.QTimeEdit())
+        self.end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
+        self.end_time_field = set_default_field_style(QtWidgets.QTimeEdit())
 
         # Spoiler Button and Line
         self.fold_button = QtWidgets.QToolButton()
@@ -101,17 +101,32 @@ class EditEntry(QtWidgets.QWidget):
         self.author_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
         # Buttons
-        accept_button = QtWidgets.QPushButton("Ok")
-        accept_button.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        accept_button.setFixedHeight(40)
+        self.accept_button = QtWidgets.QPushButton()
+        self.accept_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Accept.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        self.accept_button.setFixedSize(75,75)
 
-        delete_button = QtWidgets.QPushButton("Del")
-        delete_button.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        delete_button.setFixedHeight(40)
+        self.delete_button = QtWidgets.QPushButton()
+        self.delete_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Delete.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        self.delete_button.setFixedSize(75,75)
 
-        deny_button = QtWidgets.QPushButton("Nop")
-        deny_button.setFont(QtGui.QFont('SansSerif',pointSize=16))
-        deny_button.setFixedHeight(40)
+        self.cancel_button = QtWidgets.QPushButton()
+        self.cancel_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Cancel.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        self.cancel_button.setFixedSize(75,75)
         
         # Layout managment
         # Scroll Area
@@ -130,16 +145,16 @@ class EditEntry(QtWidgets.QWidget):
         # Add widgets to Grid
         self.grid_v_pos = 0
 
-        self.add_to_grid(headline_label, horizontal_start=0, horizontal_length=3)
+        self.add_to_grid(self.headline_label, horizontal_start=0, horizontal_length=3)
 
-        self.add_to_grid(date_label, 'Label')
-        self.add_to_grid(date_field, 'Field')
+        self.add_to_grid(self.date_label, 'Label')
+        self.add_to_grid(self.date_field, 'Field')
 
-        self.add_to_grid(start_time_label, 'Label')
-        self.add_to_grid(start_time_field, 'Field')
+        self.add_to_grid(self.start_time_label, 'Label')
+        self.add_to_grid(self.start_time_field, 'Field')
 
-        self.add_to_grid(end_time_label, 'Label')
-        self.add_to_grid(end_time_field, 'Field')
+        self.add_to_grid(self.end_time_label, 'Label')
+        self.add_to_grid(self.end_time_field, 'Field')
         
         self.add_to_grid(self.fold_button, horizontal_start=0, horizontal_length=1)
         self.add_to_grid(self.fold_line, vertical_start=self.grid_v_pos-1, horizontal_start=1, horizontal_length=2)
@@ -163,28 +178,28 @@ class EditEntry(QtWidgets.QWidget):
         self.add_to_grid(self.author_text, 'Field')
 
         # Seperation line
-        button_line = QtWidgets.QFrame()
-        button_line.setFrameShape(QtWidgets.QFrame.HLine)
-        button_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.button_line = QtWidgets.QFrame()
+        self.button_line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.button_line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
-        widget_line = QtWidgets.QFrame()
-        widget_line.setFrameShape(QtWidgets.QFrame.VLine)
-        widget_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.widget_line = QtWidgets.QFrame()
+        self.widget_line.setFrameShape(QtWidgets.QFrame.VLine)
+        self.widget_line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         # Button Area
         button_layout = QtWidgets.QHBoxLayout()
-        button_layout.addWidget(accept_button)
-        button_layout.addWidget(delete_button)
-        button_layout.addWidget(deny_button)
+        button_layout.addWidget(self.accept_button)
+        button_layout.addWidget(self.delete_button)
+        button_layout.addWidget(self.cancel_button)
 
         widget_content = QtWidgets.QVBoxLayout()
         widget_content.addWidget(scroll_area)
         widget_content.addSpacing(30)
-        widget_content.addWidget(button_line)
+        widget_content.addWidget(self.button_line)
         widget_content.addLayout(button_layout)
 
         widget_layout = QtWidgets.QHBoxLayout()
-        widget_layout.addWidget(widget_line)
+        widget_layout.addWidget(self.widget_line)
         widget_layout.addLayout(widget_content)
 
         self.setLayout(widget_layout)
@@ -278,16 +293,17 @@ class MonthOverview(QtWidgets.QWidget):
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(scroll_area_content)
         scroll_area.setStyleSheet("QScrollArea { background-color: white; border: none; }")
+        scroll_area.verticalScrollBar().setValue(scroll_area.verticalScrollBar().maximum())
 
 
-        widget_line = QtWidgets.QFrame()
-        widget_line.setFrameShape(QtWidgets.QFrame.VLine)
-        widget_line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.widget_line = QtWidgets.QFrame()
+        self.widget_line.setFrameShape(QtWidgets.QFrame.VLine)
+        self.widget_line.setFrameShadow(QtWidgets.QFrame.Sunken)
 
         widget_layout = QtWidgets.QHBoxLayout()
 
         widget_layout.addWidget(scroll_area)
-        widget_layout.addWidget(widget_line)
+        widget_layout.addWidget(self.widget_line)
 
         self.setLayout(widget_layout)
 
@@ -437,6 +453,10 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
 
 class ContentArea(QtWidgets.QWidget):
+
+    addClicked = QtCore.Signal()
+
+
     def __init__(self):
         super().__init__()
 
@@ -453,34 +473,57 @@ class ContentArea(QtWidgets.QWidget):
         button_layout.addSpacing(200)
         button_layout.setSpacing(30)
 
-        add_button = QtWidgets.QPushButton("Add")
-        add_button.setFont(QtGui.QFont('SansSerif', pointSize=16))
-        add_button.setFixedHeight(40)
-        add_button.setFixedWidth(100)
+        add_button = QtWidgets.QPushButton()
+        add_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Add.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        add_button.setFixedSize(75,75)
         button_layout.addWidget(add_button)
 
-        overtime_button = QtWidgets.QPushButton("OT")
-        overtime_button.setFont(QtGui.QFont('SansSerif', pointSize=16))
-        overtime_button.setFixedHeight(40)
-        overtime_button.setFixedWidth(100)
+        overtime_button = QtWidgets.QPushButton()
+        overtime_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Overtime.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        overtime_button.setFixedSize(75,75)
         button_layout.addWidget(overtime_button)
 
-        close_month_button = QtWidgets.QPushButton("Abschließen")
-        close_month_button.setFont(QtGui.QFont('SansSerif', pointSize=16))
-        close_month_button.setFixedHeight(40)
-        close_month_button.setFixedWidth(100)
+        close_month_button = QtWidgets.QPushButton()
+        close_month_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Lock.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        close_month_button.setFixedSize(75,75)
         button_layout.addWidget(close_month_button)
 
-        export_button = QtWidgets.QPushButton("Export")
-        export_button.setFont(QtGui.QFont('SansSerif', pointSize=16))
-        export_button.setFixedHeight(40)
-        export_button.setFixedWidth(100)
+        export_button = QtWidgets.QPushButton()
+        export_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Export.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        export_button.setFixedSize(75,75)
         button_layout.addWidget(export_button)
 
-        options_button = QtWidgets.QPushButton("Optiones")
-        options_button.setFont(QtGui.QFont('SansSerif', pointSize=16))
-        options_button.setFixedHeight(40)
-        options_button.setFixedWidth(100)
+        options_button = QtWidgets.QPushButton()
+        options_button.setStyleSheet("""QPushButton {
+                                    background-color: transparent;
+                                    border-image: url(resources/button_icons/Options.png);
+                                    background: none;
+                                    background-repeat:none;
+                                    } """)
+        options_button.setFixedSize(75,75)
+        options_button.clicked.connect(self.Testfunc)
+
+
         button_layout.addWidget(options_button)
 
         button_layout.addSpacing(200)
@@ -489,19 +532,31 @@ class ContentArea(QtWidgets.QWidget):
 
         self.setLayout(widget_layout)
 
+        add_button.clicked.connect(self.add_test)
+
+    def add_test(self):
+        self.addClicked.emit()
+
+    def Testfunc(self):
+        print("Test")
+
+        
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
         edit_entry_widget = EditEntry()
-        edit_entry_widget.setMinimumWidth(400)
-        edit_entry_widget.setMaximumWidth(450)
+        # edit_entry_widget.setMinimumWidth(400)
+        # edit_entry_widget.setMaximumWidth(450)
 
         month_overview_widget = MonthOverview()
         month_overview_widget.setMinimumWidth(150)
         month_overview_widget.setMaximumWidth(250)
 
         content_area = ContentArea()
+
+        content_area.addClicked.connect(edit_entry_widget.hide)
 
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(month_overview_widget)
