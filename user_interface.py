@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.month_overview_widget = MonthOverview()
 
         screen_size= self.screen().size().height()
-        self.content_area = ContentArea()
+        self.content_area = ContentArea(self.data)
         self.content_area.setMaximumHeight(999)
 
         self.content_area.addClicked.connect(self.change_entry_widget_visibility)

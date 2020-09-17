@@ -3,7 +3,7 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 
 class EntryOverview(QtWidgets.QGraphicsView):
-    def __init__(self):
+    def __init__(self, data):
         super().__init__()
         width = 1150
         height = 700
@@ -70,43 +70,31 @@ class EntryOverview(QtWidgets.QGraphicsView):
         earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=19))
 
         # Draw Body
-        scene.addLine(9,235,9,415, default_pen)
-        scene.addLine(535,230,535,415, default_pen)
-        scene.addLine(828,230,828,415, default_pen)
-        scene.addLine(1121,230,1121,415, default_pen)
 
-        scene.addLine(10,280,1120,280, default_pen)
-        scene.addLine(10,325,1120,325, default_pen)
-        scene.addLine(10,370,1120,370, default_pen)
-        scene.addLine(10,415,1120,415, default_pen)
+        vertical_line_pos = 235
+        for index, row in data.df.iterrows():
+            entry_date_text = scene.addText(self.format_date(row['Work Date']))
+            entry_date_text.setPos(170,vertical_line_pos+3)
+            entry_date_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
-        
+            duration = self.get_duration(row['Start Time'], row['End Time'])
+            entry_hours_text = scene.addText(self.format_duration(duration))
+            entry_hours_text.setPos(610,vertical_line_pos+3)
+            entry_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
+            entry_earnings_text = scene.addText(self.format_earnings(duration,row['Hourly Wage']))
+            entry_earnings_text.setPos(950,vertical_line_pos+3)
+            entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+            
+            vertical_line_pos += 45
+            scene.addLine(10,vertical_line_pos,1120,vertical_line_pos, default_pen)
 
-        entry_date_text = scene.addText("Di. 04.08.2020")
-        entry_date_text.setPos(170,238)
-        entry_date_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+            
 
-        entry_hours_text = scene.addText("6 Stunden")
-        entry_hours_text.setPos(610,238)
-        entry_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        entry_earnings_text = scene.addText("60 €")
-        entry_earnings_text.setPos(950,238)
-        entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        entry2_date_text = scene.addText("Do. 06.08.2020")
-        entry2_date_text.setPos(162,283)
-        entry2_date_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        entry2_hours_text = scene.addText("10 Stunden")
-        entry2_hours_text.setPos(595,283)
-        entry2_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        entry2_earnings_text = scene.addText("100 €")
-        entry2_earnings_text.setPos(935,283)
-        entry2_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
+        scene.addLine(9,230,9,vertical_line_pos, default_pen) #1 Line
+        scene.addLine(535,230,535,vertical_line_pos, default_pen) #2 Line
+        scene.addLine(828,230,828,vertical_line_pos, default_pen) #3 Line
+        scene.addLine(1121,230,1121,vertical_line_pos, default_pen) #4 Line
 
 
         # Draw Overtime
@@ -151,18 +139,41 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
         self.setScene(scene)
 
+    def format_date(self, date):
+        date = QtCore.QDate.fromString(date, 'yyyy-MM-dd')
+
+        return date.toString('ddd. dd.MM.yyyy')
+
+    def get_duration(self, start_time, end_time):
+        start_time = QtCore.QTime.fromString(start_time)
+        end_time = QtCore.QTime.fromString(end_time)
+
+        duration = start_time.secsTo(end_time)/3600
+
+        return duration
+
+    def format_duration(self, duration):
+        if duration.is_integer():
+            return "{:2.0f} Stunden".format(duration)
+        else:
+            return "{:2.1f} Stunden".format(duration)
+
+    def format_earnings(self, duration, wage):
+        return "{:3.2f} €".format(duration*wage)
+
+
 
 class ContentArea(QtWidgets.QWidget):
 
     addClicked = QtCore.Signal(bool)
     button_state = 1
-
-    def __init__(self):
+ 
+    def __init__(self, data):
         super().__init__()
 
         widget_layout = QtWidgets.QVBoxLayout()
 
-        entry_overview_widget = EntryOverview()
+        entry_overview_widget = EntryOverview(data)
         
         widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
 
