@@ -70,15 +70,15 @@ class EntryOverview(QtWidgets.QGraphicsView):
         earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=19))
 
         # Draw Body
-        # scene.addLine(9,235,9,415, default_pen)
-        # scene.addLine(535,230,535,415, default_pen)
-        # scene.addLine(828,230,828,415, default_pen)
-        # scene.addLine(1121,230,1121,415, default_pen)
+        scene.addLine(9,235,9,415, default_pen)
+        scene.addLine(535,230,535,415, default_pen)
+        scene.addLine(828,230,828,415, default_pen)
+        scene.addLine(1121,230,1121,415, default_pen)
 
-        # scene.addLine(10,280,1120,280, default_pen)
-        # scene.addLine(10,325,1120,325, default_pen)
-        # scene.addLine(10,370,1120,370, default_pen)
-        # scene.addLine(10,415,1120,415, default_pen)
+        scene.addLine(10,280,1120,280, default_pen)
+        scene.addLine(10,325,1120,325, default_pen)
+        scene.addLine(10,370,1120,370, default_pen)
+        scene.addLine(10,415,1120,415, default_pen)
 
         
 
