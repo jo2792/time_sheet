@@ -7,7 +7,7 @@ class Entry(QtWidgets.QWidget):
     close_signal = QtCore.Signal()
     save_entry_signal = QtCore.Signal(db_Entry)
 
-    def __init__(self):
+    def __init__(self, work_dates_df):
         
         # Sub init functions
         def set_default_label_style(widget):
@@ -44,7 +44,7 @@ class Entry(QtWidgets.QWidget):
         self.date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
         self.date_field = set_default_field_style(QtWidgets.QDateEdit())
         self.date_field.setDisplayFormat('dd.MM.yyyy')
-        self.date_field.setDate(QtCore.QDate.currentDate())
+        self.date_field.setDate(self.get_next_work_date(work_dates_df))
         self.date_field.setCalendarPopup(True)
         
         # Work start time
@@ -212,6 +212,25 @@ class Entry(QtWidgets.QWidget):
         self.cancel_button.clicked.connect(self.cancel_process)
 
         self.dropdown_visibility()
+
+    def get_next_work_date(self, df):
+        df = df.str.split('-', expand=True)
+        df = df.sort_values(by=[0,1,2])
+        year = int(df.iloc[-1][0])
+        month = int(df.iloc[-1][1])
+        day = int(df.iloc[-1][2])
+
+        date = QtCore.QDate(year, month, day)
+        week_day = date.dayOfWeek()
+
+        if week_day in [2,3]:
+            date = date.addDays(4-week_day)
+        elif week_day == 1:
+            date = date.addDays(1)
+        elif week_day in [4,5,6,7]:
+            date = date.addDays(9-week_day)
+        
+        return date
 
 
     def add_to_grid(self, widget, configuration=None, vertical_start=None,

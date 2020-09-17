@@ -45,11 +45,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.edit_entry_widget.remove_widget()
         else:
             self.entry_widget_is_shown = True
-            self.edit_entry_widget = Entry()
+            self.edit_entry_widget = Entry(self.data.df['Work Date'])
             self.layout.addWidget(self.edit_entry_widget, stretch= 3)
             self.edit_entry_widget.close_signal.connect(self.change_entry_widget_visibility)
             self.edit_entry_widget.save_entry_signal.connect(self.data.add_entry)
-            # sel
 
 
 
