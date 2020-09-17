@@ -1,17 +1,15 @@
 from PySide2 import QtWidgets
 from PySide2 import QtCore
 from PySide2 import QtGui
+from data_interface import Entry as db_Entry
 
-class EditEntry(QtWidgets.QWidget):
-    accept_signal = QtCore.Signal()
+class Entry(QtWidgets.QWidget):
+    close_signal = QtCore.Signal()
+    save_entry_signal = QtCore.Signal(db_Entry)
 
     def __init__(self):
-        super().__init__()
-
-        sp_retain = QtWidgets.QSizePolicy()
-        sp_retain.setRetainSizeWhenHidden(True)
-        sp_retain.setHorizontalPolicy(QtWidgets.QSizePolicy.Expanding)
-
+        
+        # Sub init functions
         def set_default_label_style(widget):
             widget.setSizePolicy(sp_retain)
             widget.setAlignment(QtCore.Qt.AlignLeft)
@@ -26,6 +24,12 @@ class EditEntry(QtWidgets.QWidget):
 
             return widget
 
+        super().__init__()
+
+        sp_retain = QtWidgets.QSizePolicy()
+        sp_retain.setRetainSizeWhenHidden(True)
+        sp_retain.setHorizontalPolicy(QtWidgets.QSizePolicy.Expanding)
+
         ### Define wideget elements
 
         # Headline
@@ -39,7 +43,7 @@ class EditEntry(QtWidgets.QWidget):
         # Work Date
         self.date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
         self.date_field = set_default_field_style(QtWidgets.QDateEdit())
-        self.date_field.setDisplayFormat('dd.MM.yyyy ')
+        self.date_field.setDisplayFormat('dd.MM.yyyy')
         self.date_field.setDate(QtCore.QDate.currentDate())
         self.date_field.setCalendarPopup(True)
         
@@ -188,7 +192,7 @@ class EditEntry(QtWidgets.QWidget):
         # Button Area
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.addWidget(self.accept_button)
-        button_layout.addWidget(self.delete_button)
+        # button_layout.addWidget(self.delete_button)
         button_layout.addWidget(self.cancel_button)
 
         widget_content = QtWidgets.QVBoxLayout()
@@ -205,6 +209,7 @@ class EditEntry(QtWidgets.QWidget):
 
         self.fold_button.clicked.connect(self.dropdown_visibility)
         self.accept_button.clicked.connect(self.accept_process)
+        self.cancel_button.clicked.connect(self.cancel_process)
 
         self.dropdown_visibility()
 
@@ -252,7 +257,30 @@ class EditEntry(QtWidgets.QWidget):
 
     def accept_process(self):
         print("Emit Signal from accept button")
-        self.accept_signal.emit()
+
+        self.save_entry()
+
+
+        # self.close_signal.emit()
+
+    def cancel_process(self):
+        print("Emit signal from cancle button")
+        self.close_signal.emit()
 
     def remove_widget(self):
         self.deleteLater()
+
+    def save_entry(self):
+        entry = db_Entry()
+        
+        entry.author = self.author_text.text()
+        entry.work_date = (self.date_field.date().day(), self.date_field.date().month(), self.date_field.date().year())
+        entry.start_time = (self.start_time_field.time().hour(), self.start_time_field.time().minute())
+        entry.end_time = (self.end_time_field.time().hour(), self.end_time_field.time().minute())
+        entry.hourly_wage = float(self.wage_textbox.text().replace(' €','').replace(',','.'))
+        entry.is_vacation = self.vacation_checkbox.isChecked()
+        entry.comment = self.comment_textbox.toPlainText()
+
+        self.save_entry_signal.emit(entry)
+
+        

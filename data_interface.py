@@ -45,7 +45,9 @@ class Database():
             raise TypeError
 
         row = entry.to_dict()
-        self.df = self.df.append(row, ignore_index=True)            
+        self.df = self.df.append(row, ignore_index=True)  
+
+        self.save()          
 
     def remove_entry(self):
         pass
@@ -110,7 +112,7 @@ class Entry():
         print("The modification_date is set automatically!")
 
     def __update_modification_date(self):
-        self.__modification_date = datetime.datetime.timestamp(datetime.datetime.now())
+        self.__modification_date = datetime.datetime.now()
 
     @property
     def author(self):
@@ -129,7 +131,8 @@ class Entry():
         return self.__work_date
 
     @work_date.setter
-    def work_date(self, day, month, year):
+    def work_date(self, date):
+        day, month, year = date
         self.__work_date = datetime.date(year, month, day)
         self.__update_modification_date()
 
@@ -138,7 +141,8 @@ class Entry():
         return self.__start_time
 
     @start_time.setter
-    def start_time(self, hour, minute):
+    def start_time(self, time):
+        hour, minute = time
         self.__start_time = datetime.time(hour, minute)
         self.__update_modification_date()
 
@@ -147,7 +151,8 @@ class Entry():
         return self.__end_time
 
     @end_time.setter
-    def end_time(self, hour, minute):
+    def end_time(self, time):
+        hour, minute = time
         self.__end_time = datetime.time(hour, minute)
         self.__update_modification_date()
 

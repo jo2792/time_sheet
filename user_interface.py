@@ -4,9 +4,10 @@ __copyright__ = "Copyright 2020"
 
 import sys
 from PySide2 import QtWidgets, QtCore, QtGui
-from CuQtWidgets.EditEntry import EditEntry
+from CuQtWidgets.Entry import Entry
 from CuQtWidgets.ContentArea import ContentArea
 from CuQtWidgets.MonthOverview import MonthOverview
+import data_interface
 
 class MainWindow(QtWidgets.QMainWindow):
     entry_widget_is_shown = False
@@ -14,6 +15,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
+
+        self.data = data_interface.Database('Jordan')
 
         self.month_overview_widget = MonthOverview()
 
@@ -42,9 +45,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.edit_entry_widget.remove_widget()
         else:
             self.entry_widget_is_shown = True
-            self.edit_entry_widget = EditEntry()
+            self.edit_entry_widget = Entry()
             self.layout.addWidget(self.edit_entry_widget, stretch= 3)
-            self.edit_entry_widget.accept_signal.connect(self.change_entry_widget_visibility)            
+            self.edit_entry_widget.close_signal.connect(self.change_entry_widget_visibility)
+            self.edit_entry_widget.save_entry_signal.connect(self.data.add_entry)
+            # sel
+
+
+
         
 if __name__ == "__main__":
 
