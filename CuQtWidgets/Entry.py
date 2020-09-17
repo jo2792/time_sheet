@@ -44,16 +44,18 @@ class Entry(QtWidgets.QWidget):
         self.date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
         self.date_field = set_default_field_style(QtWidgets.QDateEdit())
         self.date_field.setDisplayFormat('dd.MM.yyyy')
-        self.date_field.setDate(self.get_next_work_date(work_dates_df))
+        self.date_field.setDate(self.next_default_date(work_dates_df))
         self.date_field.setCalendarPopup(True)
         
         # Work start time
         self.start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
         self.start_time_field = set_default_field_style(QtWidgets.QTimeEdit())
-        # self.start_time_label.setMinimumSize()
+        self.start_time_field.setTime(self.default_time('start'))
+        
         # Work end time
         self.end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
         self.end_time_field = set_default_field_style(QtWidgets.QTimeEdit())
+        self.end_time_field.setTime(self.default_time('end'))
 
         # Spoiler Button and Line
         self.fold_button = QtWidgets.QToolButton()
@@ -213,7 +215,7 @@ class Entry(QtWidgets.QWidget):
 
         self.dropdown_visibility()
 
-    def get_next_work_date(self, df):
+    def next_default_date(self, df):
         df = df.str.split('-', expand=True)
         df = df.sort_values(by=[0,1,2])
         year = int(df.iloc[-1][0])
@@ -231,6 +233,20 @@ class Entry(QtWidgets.QWidget):
             date = date.addDays(9-week_day)
         
         return date
+
+    def default_time(self, s):
+        week_day = self.date_field.date().dayOfWeek()
+
+        if week_day == 2:
+            if s == 'start':
+                return QtCore.QTime(7,0)
+            elif s == 'end':
+                return QtCore.QTime(13,0)
+        elif week_day == 4:
+            if s == 'start':
+                return QtCore.QTime(13,0)
+            elif s == 'end':
+                return QtCore.QTime(20,0)
 
 
     def add_to_grid(self, widget, configuration=None, vertical_start=None,
