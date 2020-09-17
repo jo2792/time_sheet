@@ -259,9 +259,7 @@ class Entry(QtWidgets.QWidget):
         print("Emit Signal from accept button")
 
         self.save_entry()
-
-
-        # self.close_signal.emit()
+        self.close_signal.emit()
 
     def cancel_process(self):
         print("Emit signal from cancle button")
