@@ -11,7 +11,7 @@ import data_interface
 
 class MainWindow(QtWidgets.QMainWindow):
     entry_widget_is_shown = False
-    edit_entry_widget = None
+    entry_widget = None
 
     def __init__(self):
         super().__init__()
@@ -37,20 +37,18 @@ class MainWindow(QtWidgets.QMainWindow):
         window_content.setLayout(self.layout)
         self.setCentralWidget(window_content)
 
-    def change_entry_widget_visibility(self):
+    def change_entry_widget_visibility(self, is_add_widget=True):
         self.content_area.switch_button_state()
         if self.entry_widget_is_shown:
             self.entry_widget_is_shown= False
-            self.layout.removeWidget(self.edit_entry_widget)
-            self.edit_entry_widget.remove_widget()
+            self.layout.removeWidget(self.entry_widget)
+            self.entry_widget.remove_widget()
         else:
             self.entry_widget_is_shown = True
-            self.edit_entry_widget = Entry(self.data.df['Work Date'])
-            self.layout.addWidget(self.edit_entry_widget, stretch= 3)
-            self.edit_entry_widget.close_signal.connect(self.change_entry_widget_visibility)
-            self.edit_entry_widget.save_entry_signal.connect(self.data.add_entry)
-
-
+            self.entry_widget = Entry(self.data.df['Work Date'], is_add_widget)
+            self.layout.addWidget(self.entry_widget, stretch= 3)
+            self.entry_widget.close_signal.connect(self.change_entry_widget_visibility)
+            self.entry_widget.save_entry_signal.connect(self.data.add_entry)
 
         
 if __name__ == "__main__":

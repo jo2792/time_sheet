@@ -7,7 +7,7 @@ class Entry(QtWidgets.QWidget):
     close_signal = QtCore.Signal()
     save_entry_signal = QtCore.Signal(db_Entry)
 
-    def __init__(self, work_dates_df):
+    def __init__(self, work_dates_df, is_add):
         
         # Sub init functions
         def set_default_label_style(widget):
@@ -33,7 +33,11 @@ class Entry(QtWidgets.QWidget):
         ### Define wideget elements
 
         # Headline
-        self.headline_label = QtWidgets.QLabel("Eintrag bearbeiten")
+        if is_add:
+            headline_str = "Eintrag hinzufügen"
+        else:
+            headline_str = "Eintrag bearbeiten"
+        self.headline_label = QtWidgets.QLabel(headline_str)
         self.headline_label.setAlignment(QtCore.Qt.AlignLeft)
         font = QtGui.QFont('SansSerif',pointSize=20)
         font.setUnderline(True)
@@ -194,7 +198,8 @@ class Entry(QtWidgets.QWidget):
         # Button Area
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.addWidget(self.accept_button)
-        # button_layout.addWidget(self.delete_button)
+        if not is_add:
+            button_layout.addWidget(self.delete_button)
         button_layout.addWidget(self.cancel_button)
 
         widget_content = QtWidgets.QVBoxLayout()

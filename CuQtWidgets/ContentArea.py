@@ -148,7 +148,7 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
 class ContentArea(QtWidgets.QWidget):
 
-    addClicked = QtCore.Signal()
+    addClicked = QtCore.Signal(bool)
     button_state = 1
 
     def __init__(self):
@@ -230,7 +230,7 @@ class ContentArea(QtWidgets.QWidget):
 
     def add_test(self):
         if self.button_state:
-            self.addClicked.emit()
+            self.addClicked.emit(True)
 
     def switch_button_state(self):
         self.button_state += 1
