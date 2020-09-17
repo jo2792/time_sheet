@@ -6,6 +6,8 @@ import sys
 from PySide2 import QtWidgets, QtCore, QtGui
 
 class EditEntry(QtWidgets.QWidget):
+    accept_signal = QtCore.Signal()
+
     def __init__(self):
         super().__init__()
 
@@ -204,9 +206,11 @@ class EditEntry(QtWidgets.QWidget):
 
         self.setLayout(widget_layout)
 
-        self.fold_button.clicked.connect(self.change_visibility)
+        self.fold_button.clicked.connect(self.dropdown_visibility)
+        self.accept_button.clicked.connect(self.accept_process)
 
-        self.change_visibility()
+        self.dropdown_visibility()
+
 
     def add_to_grid(self, widget, configuration=None, vertical_start=None,
                     horizontal_start=None, vertical_length=None, horizontal_length=None):
@@ -231,7 +235,7 @@ class EditEntry(QtWidgets.QWidget):
 
         self.grid_v_pos += vertical_length + vertical_start - self.grid_v_pos
 
-    def change_visibility(self):
+    def dropdown_visibility(self):
         changing_widgets = [self.vacation_label, self.vacation_checkbox,
                             self.comment_label,  self.comment_textbox,
                             self.wage_label, self.wage_textbox,
@@ -249,6 +253,14 @@ class EditEntry(QtWidgets.QWidget):
             self.fold_button.setArrowType(QtCore.Qt.RightArrow)
             for widget in changing_widgets: widget.hide()
 
+    def accept_process(self):
+        print("Emit Signal from accept button")
+        self.accept_signal.emit()
+
+    def remove_widget(self):
+        self.deleteLater()
+
+        
 class MonthOverview(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -259,9 +271,6 @@ class MonthOverview(QtWidgets.QWidget):
                     "Dezember 2020"]
 
         widget_content = QtWidgets.QVBoxLayout()
-
-        size_policy = QtWidgets.QSizePolicy()
-        # size_policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Minimum)
 
         entry_dict = {}
 
@@ -312,15 +321,17 @@ class EntryOverview(QtWidgets.QGraphicsView):
         super().__init__()
         width = 1150
         height = 700
-        self.setMinimumSize(width,height)
-        self.setMaximumSize(width, height)
+        # self.setMinimumSize(width,height)
+        # self.setMaximumSize(width, height)
+        self.setMinimumHeight(height)
+        self.setMaximumHeight(height)
+
         self.setSizePolicy(QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Minimum)
 
         scene = QtWidgets.QGraphicsScene(0,0,1130,680)
         self.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
         scene.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(240,240,240), QtCore.Qt.BrushStyle.SolidPattern))
-        # self.setAlignment(QtCore.Qt.AlignHCenter)
         
         strong_pen = QtGui.QPen("black")
         strong_pen.setWidthF(4)
@@ -349,12 +360,9 @@ class EntryOverview(QtWidgets.QGraphicsView):
         scene.addLine(828,65,828,165, default_pen)
         scene.addLine(555,115,1101,115, default_pen)
         
-    
-
         date_text = scene.addText("Datum")
         date_text.setPos(230,200)
         date_text.setFont(QtGui.QFont('SansSerif',pointSize=19))
-        # print(date_text.boundingRect().size())
 
         work_hours = scene.addText("Arbeitsstunden")
         work_hours.setPos(590,200)
@@ -455,7 +463,7 @@ class EntryOverview(QtWidgets.QGraphicsView):
 class ContentArea(QtWidgets.QWidget):
 
     addClicked = QtCore.Signal()
-
+    button_state = 1
 
     def __init__(self):
         super().__init__()
@@ -521,7 +529,7 @@ class ContentArea(QtWidgets.QWidget):
                                     background-repeat:none;
                                     } """)
         options_button.setFixedSize(75,75)
-        options_button.clicked.connect(self.Testfunc)
+        # options_button.clicked.connect(self.Testfunc)
 
 
         button_layout.addWidget(options_button)
@@ -535,38 +543,55 @@ class ContentArea(QtWidgets.QWidget):
         add_button.clicked.connect(self.add_test)
 
     def add_test(self):
-        self.addClicked.emit()
+        if self.button_state:
+            self.addClicked.emit()
 
-    def Testfunc(self):
-        print("Test")
+    def switch_button_state(self):
+        self.button_state += 1
+        self.button_state = self.button_state % 2
 
-        
+        print("Button State: " + str(self.button_state))      
 
 class MainWindow(QtWidgets.QMainWindow):
+    entry_widget_is_shown = False
     def __init__(self):
         super().__init__()
 
-        edit_entry_widget = EditEntry()
-        # edit_entry_widget.setMinimumWidth(400)
-        # edit_entry_widget.setMaximumWidth(450)
+        self.month_overview_widget = MonthOverview()
 
-        month_overview_widget = MonthOverview()
-        month_overview_widget.setMinimumWidth(150)
-        month_overview_widget.setMaximumWidth(250)
+        screen_size= self.screen().size().height()
+        self.content_area = ContentArea()
+        self.content_area.setMaximumHeight(999)
 
-        content_area = ContentArea()
+        self.content_area.addClicked.connect(self.change_entry_widget_visibility)
+        
 
-        content_area.addClicked.connect(edit_entry_widget.hide)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.layout.addWidget(self.month_overview_widget)
+        self.layout.addWidget(self.content_area, stretch= 8)
 
-        layout = QtWidgets.QHBoxLayout()
-        layout.addWidget(month_overview_widget)
-        layout.addWidget(content_area)
-        layout.addWidget(edit_entry_widget)#, stretch=3)
-
+        self.month_overview_widget.setMaximumWidth(230)
+        self.month_overview_widget.setMinimumWidth(230)
 
         window_content = QtWidgets.QWidget()
-        window_content.setLayout(layout)
+        window_content.setLayout(self.layout)
         self.setCentralWidget(window_content)
+
+    def add_entry_widget(self):
+        self.edit_entry_widget = EditEntry()
+        self.layout.addWidget(self.edit_entry_widget, stretch= 3)
+
+    def change_entry_widget_visibility(self):
+        self.content_area.switch_button_state()
+        if self.entry_widget_is_shown:
+            self.entry_widget_is_shown= False
+            self.layout.removeWidget(self.edit_entry_widget)
+            self.edit_entry_widget.remove_widget()
+        else:
+            self.entry_widget_is_shown = True
+            self.edit_entry_widget = EditEntry()
+            self.layout.addWidget(self.edit_entry_widget, stretch= 3)
+            self.edit_entry_widget.accept_signal.connect(self.change_entry_widget_visibility)            
         
 if __name__ == "__main__":
 
