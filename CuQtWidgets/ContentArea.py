@@ -166,12 +166,12 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
     def format_duration(self, duration):
         if duration.is_integer():
-            return "{:2.0f} Stunden".format(duration)
+            return "{:2.0f} Stunden".format(duration).replace('.',',')
         else:
-            return "{:2.1f} Stunden".format(duration)
+            return "{:2.1f} Stunden".format(duration).replace('.',',')
 
     def format_earnings(self, earning):
-        return "{:4.2f} €".format(earning)
+        return "{:4.2f} €".format(earning).replace('.',',')
 
     def center_text(self,text_obj, left_border, right_border):
         text_width = text_obj.boundingRect().width()
