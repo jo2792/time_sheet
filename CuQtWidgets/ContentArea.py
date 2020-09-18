@@ -30,30 +30,6 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
         padding_top = 10
 
-        # Draw Head
-        scene.addLine(828,25+padding_top,828,125+padding_top, default_pen)
-        scene.addLine(555,75+padding_top,1101,75+padding_top, default_pen)
-
-        self.month_title_text = scene.addText("August 2020")
-        self.month_title_text.setPos(70,10+padding_top)
-        self.month_title_text.setFont(QtGui.QFont('SansSerif', pointSize=50))
-
-        sum_hours_text = scene.addText("∑ Arbeitsstunden")
-        sum_hours_text.setPos(570,30+padding_top)
-        sum_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        sum_earnings_text = scene.addText("∑ Verdienst")
-        sum_earnings_text.setPos(880,30+padding_top)
-        sum_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        self.sum_hours_value_text = scene.addText("16 Stunden")
-        self.sum_hours_value_text.setPos(595,80+padding_top)
-        self.sum_hours_value_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
-        self.sum_earnings_value_text = scene.addText("160 €")
-        self.sum_earnings_value_text.setPos(932,80+padding_top)
-        self.sum_earnings_value_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
-
         # Draw Body Headline
         scene.addLine(10,160+padding_top,1120,160+padding_top, strong_pen)
         scene.addLine(10,195+padding_top, 1120, 195+padding_top, strong_pen)
@@ -78,6 +54,9 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
         vertical_line_pos = 195+padding_top
         text_centering_margin = 3
+        sum_duration = 0
+        sum_earnings = 0
+
         for index, row in data.df.iterrows():
             entry_date_text = scene.addText(self.format_date(row['Work Date']))
             entry_date_text.setPos(self.center_text(entry_date_text,10,535),vertical_line_pos+text_centering_margin)
@@ -87,21 +66,45 @@ class EntryOverview(QtWidgets.QGraphicsView):
             entry_hours_text = scene.addText(self.format_duration(duration))
             entry_hours_text.setPos(self.center_text(entry_hours_text,535,828)-15,vertical_line_pos+text_centering_margin)
             entry_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+            sum_duration += duration
 
-            entry_earnings_text = scene.addText(self.format_earnings(duration,row['Hourly Wage']))
+            earning = duration*row['Hourly Wage']
+            entry_earnings_text = scene.addText(self.format_earnings(earning))
             entry_earnings_text.setPos(self.center_text(entry_earnings_text,828,1120),vertical_line_pos+text_centering_margin)
             entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+            sum_earnings += earning
             
             vertical_line_pos += 45
             scene.addLine(10,vertical_line_pos,1120,vertical_line_pos, default_pen)
-
-            
 
         scene.addLine(9,190+padding_top,9,vertical_line_pos, default_pen) #1 Line
         scene.addLine(535,190+padding_top,535,vertical_line_pos, default_pen) #2 Line
         scene.addLine(828,190+padding_top,828,vertical_line_pos, default_pen) #3 Line
         scene.addLine(1121,190+padding_top,1121,vertical_line_pos, default_pen) #4 Line
 
+        # Draw Head
+        scene.addLine(828,25+padding_top,828,125+padding_top, default_pen)
+        scene.addLine(555,75+padding_top,1101,75+padding_top, default_pen)
+
+        self.month_title_text = scene.addText("August 2020")
+        self.month_title_text.setPos(70,10+padding_top)
+        self.month_title_text.setFont(QtGui.QFont('SansSerif', pointSize=50))
+
+        sum_hours_text = scene.addText("∑ Arbeitsstunden")
+        sum_hours_text.setPos(570,30+padding_top)
+        sum_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+
+        sum_earnings_text = scene.addText("∑ Verdienst")
+        sum_earnings_text.setPos(880,30+padding_top)
+        sum_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+
+        self.sum_hours_value_text = scene.addText(self.format_duration(sum_duration))
+        self.sum_hours_value_text.setPos(self.center_text(self.sum_hours_value_text,555,828)-30,80+padding_top)
+        self.sum_hours_value_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
+
+        self.sum_earnings_value_text = scene.addText(self.format_earnings(sum_earnings))
+        self.sum_earnings_value_text.setPos(self.center_text(self.sum_earnings_value_text,828,1101),80+padding_top)
+        self.sum_earnings_value_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
         # Draw Overtime
         # scene.addLine(210,500,828,500, default_pen)
@@ -167,8 +170,8 @@ class EntryOverview(QtWidgets.QGraphicsView):
         else:
             return "{:2.1f} Stunden".format(duration)
 
-    def format_earnings(self, duration, wage):
-        return "{:3.2f} €".format(duration*wage)
+    def format_earnings(self, earning):
+        return "{:4.2f} €".format(earning)
 
     def center_text(self,text_obj, left_border, right_border):
         text_width = text_obj.boundingRect().width()
