@@ -6,15 +6,18 @@ class EntryOverview(QtWidgets.QGraphicsView):
     def __init__(self, data):
         super().__init__()
         width = 1150
-        height = 700
-        # self.setMinimumSize(width,height)
-        # self.setMaximumSize(width, height)
-        self.setMinimumHeight(height)
-        self.setMaximumHeight(height)
+        height = 850
+        self.setMinimumSize(width,height)
+        self.setMaximumSize(width, height)
 
-        self.setSizePolicy(QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Minimum)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        
+
+        self.setSizePolicy(QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Maximum)
 
         scene = QtWidgets.QGraphicsScene(0,0,1130,680)
+        
         self.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
         scene.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(240,240,240), QtCore.Qt.BrushStyle.SolidPattern))
@@ -25,65 +28,68 @@ class EntryOverview(QtWidgets.QGraphicsView):
         default_pen = QtGui.QPen("black")
         default_pen.setWidthF(2)
 
+        padding_top = 10
+
         # Draw Head
-        scene.addLine(828,65,828,165, default_pen)
-        scene.addLine(555,115,1101,115, default_pen)
+        scene.addLine(828,25+padding_top,828,125+padding_top, default_pen)
+        scene.addLine(555,75+padding_top,1101,75+padding_top, default_pen)
 
         self.month_title_text = scene.addText("August 2020")
-        self.month_title_text.setPos(70,50)
+        self.month_title_text.setPos(70,10+padding_top)
         self.month_title_text.setFont(QtGui.QFont('SansSerif', pointSize=50))
 
         sum_hours_text = scene.addText("∑ Arbeitsstunden")
-        sum_hours_text.setPos(570,70)
+        sum_hours_text.setPos(570,30+padding_top)
         sum_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
         sum_earnings_text = scene.addText("∑ Verdienst")
-        sum_earnings_text.setPos(880,70)
+        sum_earnings_text.setPos(880,30+padding_top)
         sum_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
         self.sum_hours_value_text = scene.addText("16 Stunden")
-        self.sum_hours_value_text.setPos(595,120)
+        self.sum_hours_value_text.setPos(595,80+padding_top)
         self.sum_hours_value_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
         self.sum_earnings_value_text = scene.addText("160 €")
-        self.sum_earnings_value_text.setPos(932,120)
+        self.sum_earnings_value_text.setPos(932,80+padding_top)
         self.sum_earnings_value_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
         # Draw Body Headline
-        scene.addLine(10,200,1120,200, strong_pen)
-        scene.addLine(10,235 , 1120, 235, strong_pen)
-        scene.addLine(10,200,10,235, strong_pen)
-        scene.addLine(1120,200,1120,235, strong_pen)
-        scene.addLine(828,200,828,235, strong_pen)
-        scene.addLine(535,200,535,235, strong_pen)
+        scene.addLine(10,160+padding_top,1120,160+padding_top, strong_pen)
+        scene.addLine(10,195+padding_top, 1120, 195+padding_top, strong_pen)
+        scene.addLine(10,160+padding_top,10,195+padding_top, strong_pen)
+        scene.addLine(1120,160+padding_top,1120,195+padding_top, strong_pen)
+        scene.addLine(828,160+padding_top,828,195+padding_top, strong_pen)
+        scene.addLine(535,160+padding_top,535,195+padding_top, strong_pen)
 
         date_text = scene.addText("Datum")
-        date_text.setPos(230,200)
+        date_text.setPos(230,160+padding_top)
         date_text.setFont(QtGui.QFont('SansSerif',pointSize=19))
 
         work_hours = scene.addText("Arbeitsstunden")
-        work_hours.setPos(590,200)
+        work_hours.setPos(590,160+padding_top)
         work_hours.setFont(QtGui.QFont('SansSerif', pointSize=19))
 
         earnings_text = scene.addText("Verdienst")
-        earnings_text.setPos(915,200)
+        earnings_text.setPos(915,160+padding_top)
         earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=19))
 
         # Draw Body
 
-        vertical_line_pos = 235
+        vertical_line_pos = 195+padding_top
+        text_centering_margin = 3
         for index, row in data.df.iterrows():
             entry_date_text = scene.addText(self.format_date(row['Work Date']))
-            entry_date_text.setPos(170,vertical_line_pos+3)
+            entry_date_text.setPos(170,vertical_line_pos+text_centering_margin)
             entry_date_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
             duration = self.get_duration(row['Start Time'], row['End Time'])
             entry_hours_text = scene.addText(self.format_duration(duration))
-            entry_hours_text.setPos(610,vertical_line_pos+3)
+            entry_hours_text.setPos(610,vertical_line_pos+text_centering_margin)
             entry_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
             entry_earnings_text = scene.addText(self.format_earnings(duration,row['Hourly Wage']))
-            entry_earnings_text.setPos(950,vertical_line_pos+3)
+            entry_earnings_text.setPos(950,vertical_line_pos+text_centering_margin)
             entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
             
             vertical_line_pos += 45
@@ -91,10 +97,10 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
             
 
-        scene.addLine(9,230,9,vertical_line_pos, default_pen) #1 Line
-        scene.addLine(535,230,535,vertical_line_pos, default_pen) #2 Line
-        scene.addLine(828,230,828,vertical_line_pos, default_pen) #3 Line
-        scene.addLine(1121,230,1121,vertical_line_pos, default_pen) #4 Line
+        scene.addLine(9,190+padding_top,9,vertical_line_pos, default_pen) #1 Line
+        scene.addLine(535,190+padding_top,535,vertical_line_pos, default_pen) #2 Line
+        scene.addLine(828,190+padding_top,828,vertical_line_pos, default_pen) #3 Line
+        scene.addLine(1121,190+padding_top,1121,vertical_line_pos, default_pen) #4 Line
 
 
         # Draw Overtime
@@ -137,6 +143,9 @@ class EntryOverview(QtWidgets.QGraphicsView):
         # pre_overtime_text.setPos(600,615)
         # pre_overtime_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
+        padding_bottom = 40
+        scene.setSceneRect(0,0,1130,vertical_line_pos+padding_bottom)
+
         self.setScene(scene)
 
     def format_date(self, date):
@@ -177,8 +186,9 @@ class ContentArea(QtWidgets.QWidget):
         
         widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
 
+        widget_layout.addSpacing(30)
         widget_layout.addWidget(entry_overview_widget)
-        widget_layout.addSpacing(800)
+        widget_layout.addSpacing(200)
 
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.addSpacing(200)
