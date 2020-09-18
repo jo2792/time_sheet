@@ -63,15 +63,15 @@ class EntryOverview(QtWidgets.QGraphicsView):
         scene.addLine(535,160+padding_top,535,195+padding_top, strong_pen)
 
         date_text = scene.addText("Datum")
-        date_text.setPos(230,160+padding_top)
+        date_text.setPos(self.center_text(date_text,10,535),160+padding_top)
         date_text.setFont(QtGui.QFont('SansSerif',pointSize=19))
 
         work_hours = scene.addText("Arbeitsstunden")
-        work_hours.setPos(590,160+padding_top)
+        work_hours.setPos(self.center_text(work_hours,535,828),160+padding_top)
         work_hours.setFont(QtGui.QFont('SansSerif', pointSize=19))
 
         earnings_text = scene.addText("Verdienst")
-        earnings_text.setPos(915,160+padding_top)
+        earnings_text.setPos(self.center_text(earnings_text,828,1120),160+padding_top)
         earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=19))
 
         # Draw Body
@@ -80,16 +80,16 @@ class EntryOverview(QtWidgets.QGraphicsView):
         text_centering_margin = 3
         for index, row in data.df.iterrows():
             entry_date_text = scene.addText(self.format_date(row['Work Date']))
-            entry_date_text.setPos(170,vertical_line_pos+text_centering_margin)
+            entry_date_text.setPos(self.center_text(entry_date_text,10,535),vertical_line_pos+text_centering_margin)
             entry_date_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
             duration = self.get_duration(row['Start Time'], row['End Time'])
             entry_hours_text = scene.addText(self.format_duration(duration))
-            entry_hours_text.setPos(610,vertical_line_pos+text_centering_margin)
+            entry_hours_text.setPos(self.center_text(entry_hours_text,535,828)-15,vertical_line_pos+text_centering_margin)
             entry_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
             entry_earnings_text = scene.addText(self.format_earnings(duration,row['Hourly Wage']))
-            entry_earnings_text.setPos(950,vertical_line_pos+text_centering_margin)
+            entry_earnings_text.setPos(self.center_text(entry_earnings_text,828,1120),vertical_line_pos+text_centering_margin)
             entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
             
             vertical_line_pos += 45
@@ -169,6 +169,13 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
     def format_earnings(self, duration, wage):
         return "{:3.2f} €".format(duration*wage)
+
+    def center_text(self,text_obj, left_border, right_border):
+        text_width = text_obj.boundingRect().width()
+        range = right_border - left_border
+        
+        start_position = ((range - (2*text_width)) / 2 ) + left_border
+        return start_position
 
 
 
