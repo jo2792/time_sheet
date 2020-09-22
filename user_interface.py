@@ -25,6 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.content_area.setMaximumHeight(999)
 
         self.content_area.addClicked.connect(self.change_entry_widget_visibility)
+        self.content_area.entry_overview_widget.editClicked.connect(self.Test)
         
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.addWidget(self.month_overview_widget)
@@ -36,6 +37,9 @@ class MainWindow(QtWidgets.QMainWindow):
         window_content = QtWidgets.QWidget()
         window_content.setLayout(self.layout)
         self.setCentralWidget(window_content)
+
+    def Test(self,numb):
+        print(numb)
 
     def change_entry_widget_visibility(self, is_add_widget=True):
         self.content_area.switch_button_state()

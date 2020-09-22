@@ -3,6 +3,8 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 
 class EntryOverview(QtWidgets.QGraphicsView):
+    editClicked = QtCore.Signal(int)
+
     def __init__(self, data):
         super().__init__()
         width = 1150
@@ -52,35 +54,35 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
         # Draw Body
 
-        vertical_line_pos = 195+padding_top
+        self.vertical_line_pos = 195+padding_top
         text_centering_margin = 3
         sum_duration = 0
         sum_earnings = 0
 
         for index, row in data.df.iterrows():
             entry_date_text = scene.addText(self.format_date(row['Work Date']))
-            entry_date_text.setPos(self.center_text(entry_date_text,10,535),vertical_line_pos+text_centering_margin)
+            entry_date_text.setPos(self.center_text(entry_date_text,10,535),self.vertical_line_pos+text_centering_margin)
             entry_date_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
             duration = self.get_duration(row['Start Time'], row['End Time'])
             entry_hours_text = scene.addText(self.format_duration(duration))
-            entry_hours_text.setPos(self.center_text(entry_hours_text,535,828)-15,vertical_line_pos+text_centering_margin)
+            entry_hours_text.setPos(self.center_text(entry_hours_text,535,828)-15,self.vertical_line_pos+text_centering_margin)
             entry_hours_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
             sum_duration += duration
 
             earning = duration*row['Hourly Wage']
             entry_earnings_text = scene.addText(self.format_earnings(earning))
-            entry_earnings_text.setPos(self.center_text(entry_earnings_text,828,1120),vertical_line_pos+text_centering_margin)
+            entry_earnings_text.setPos(self.center_text(entry_earnings_text,828,1120),self.vertical_line_pos+text_centering_margin)
             entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
             sum_earnings += earning
             
-            vertical_line_pos += 45
-            scene.addLine(10,vertical_line_pos,1120,vertical_line_pos, default_pen)
+            self.vertical_line_pos += 45
+            scene.addLine(10,self.vertical_line_pos,1120,self.vertical_line_pos, default_pen)
 
-        scene.addLine(9,190+padding_top,9,vertical_line_pos, default_pen) #1 Line
-        scene.addLine(535,190+padding_top,535,vertical_line_pos, default_pen) #2 Line
-        scene.addLine(828,190+padding_top,828,vertical_line_pos, default_pen) #3 Line
-        scene.addLine(1121,190+padding_top,1121,vertical_line_pos, default_pen) #4 Line
+        scene.addLine(9,190+padding_top,9,self.vertical_line_pos, default_pen) #1 Line
+        scene.addLine(535,190+padding_top,535,self.vertical_line_pos, default_pen) #2 Line
+        scene.addLine(828,190+padding_top,828,self.vertical_line_pos, default_pen) #3 Line
+        scene.addLine(1121,190+padding_top,1121,self.vertical_line_pos, default_pen) #4 Line
 
         # Draw Head
         scene.addLine(828,25+padding_top,828,125+padding_top, default_pen)
@@ -147,7 +149,7 @@ class EntryOverview(QtWidgets.QGraphicsView):
         # pre_overtime_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
 
         padding_bottom = 40
-        scene.setSceneRect(0,0,1130,vertical_line_pos+padding_bottom)
+        scene.setSceneRect(0,0,1130,self.vertical_line_pos+padding_bottom)
 
         self.setScene(scene)
 
@@ -180,7 +182,23 @@ class EntryOverview(QtWidgets.QGraphicsView):
         start_position = ((range - (2*text_width)) / 2 ) + left_border
         return start_position
 
+    def mousePressEvent(self, event):
+        """ 
+        Functionality of mouse click on row elements
+        """
 
+        position = event.pos()
+    
+        print(f"Positions: {position.x()}, {position.y()}")
+
+        if position.y() <= 306:
+            print("Überhalb der Tabelle!")
+        elif position.y() > self.vertical_line_pos+100:
+            print("Unterhalb der Tabelle!")
+        else:
+            zeile = int((position.y() - 306) / 45)
+            print(f"Zeile {zeile}")
+            self.editClicked.emit(zeile)
 
 class ContentArea(QtWidgets.QWidget):
 
@@ -192,12 +210,12 @@ class ContentArea(QtWidgets.QWidget):
 
         widget_layout = QtWidgets.QVBoxLayout()
 
-        entry_overview_widget = EntryOverview(data)
+        self.entry_overview_widget = EntryOverview(data)
         
         widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
 
         widget_layout.addSpacing(30)
-        widget_layout.addWidget(entry_overview_widget)
+        widget_layout.addWidget(self.entry_overview_widget)
         widget_layout.addSpacing(200)
 
         button_layout = QtWidgets.QHBoxLayout()
