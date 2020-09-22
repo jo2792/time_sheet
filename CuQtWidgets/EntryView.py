@@ -3,11 +3,14 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 from data_interface import Entry as db_Entry
 
-class Entry(QtWidgets.QWidget):
+class _EntryView(QtWidgets.QWidget):
+    """
+    Abstract class to build the Inout mask
+    """
     close_signal = QtCore.Signal()
     save_entry_signal = QtCore.Signal(db_Entry)
 
-    def __init__(self, work_dates_df, is_add):
+    def __init__(self):
         
         # Sub init functions
         def set_default_label_style(widget):
@@ -33,11 +36,7 @@ class Entry(QtWidgets.QWidget):
         ### Define wideget elements
 
         # Headline
-        if is_add:
-            headline_str = "Eintrag hinzufügen"
-        else:
-            headline_str = "Eintrag bearbeiten"
-        self.headline_label = QtWidgets.QLabel(headline_str)
+        self.headline_label = QtWidgets.QLabel()
         self.headline_label.setAlignment(QtCore.Qt.AlignLeft)
         font = QtGui.QFont('SansSerif',pointSize=20)
         font.setUnderline(True)
@@ -48,25 +47,21 @@ class Entry(QtWidgets.QWidget):
         self.date_label = set_default_label_style(QtWidgets.QLabel("Datum:"))
         self.date_field = set_default_field_style(QtWidgets.QDateEdit())
         self.date_field.setDisplayFormat('dd.MM.yyyy')
-        self.date_field.setDate(self.next_default_date(work_dates_df))
         self.date_field.setCalendarPopup(True)
         
         # Work start time
         self.start_time_label = set_default_label_style(QtWidgets.QLabel("Beginn:"))
         self.start_time_field = set_default_field_style(QtWidgets.QTimeEdit())
-        self.start_time_field.setTime(self.default_time('start'))
         
         # Work end time
         self.end_time_label = set_default_label_style(QtWidgets.QLabel("Ende:"))
         self.end_time_field = set_default_field_style(QtWidgets.QTimeEdit())
-        self.end_time_field.setTime(self.default_time('end'))
 
         # Spoiler Button and Line
         self.fold_button = QtWidgets.QToolButton()
         self.fold_button.setStyleSheet("QToolButton { border: none; }")
         self.fold_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.fold_button.setArrowType(QtCore.Qt.DownArrow)
-        # self.fold_button.setText("Erweitert")
         self.fold_button.setCheckable(True)
         self.fold_button.setChecked(False)
 
@@ -88,24 +83,24 @@ class Entry(QtWidgets.QWidget):
 
         # Wage
         self.wage_label = set_default_label_style(QtWidgets.QLabel("Stundenlohn:"))
-        self.wage_textbox = set_default_field_style(QtWidgets.QLineEdit("10,00"))
+        self.wage_textbox = set_default_field_style(QtWidgets.QLineEdit())
         self.wage_textbox.setInputMask('09,99 €')
         
         # creation date
         self.creation_date_label = set_default_label_style(QtWidgets.QLabel("Erstelldatum:"))
-        self.creation_date_text = set_default_field_style(QtWidgets.QLineEdit("18.08.2020"))
+        self.creation_date_text = set_default_field_style(QtWidgets.QLineEdit())
         self.creation_date_text.setReadOnly(True)
         self.creation_date_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
         # modification date
         self.modification_date_label = set_default_label_style(QtWidgets.QLabel("Änderungsdatum:"))
-        self.modification_date_text = set_default_field_style(QtWidgets.QLineEdit("19.08.2020"))
+        self.modification_date_text = set_default_field_style(QtWidgets.QLineEdit())
         self.modification_date_text.setReadOnly(True)
         self.modification_date_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
         # author
         self.author_label = set_default_label_style(QtWidgets.QLabel("Autor:"))
-        self.author_text = set_default_field_style(QtWidgets.QLineEdit("Jordan"))
+        self.author_text = set_default_field_style(QtWidgets.QLineEdit())
         self.author_text.setReadOnly(True)
         self.author_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
 
@@ -198,8 +193,7 @@ class Entry(QtWidgets.QWidget):
         # Button Area
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.addWidget(self.accept_button)
-        if not is_add:
-            button_layout.addWidget(self.delete_button)
+        button_layout.addWidget(self.delete_button)
         button_layout.addWidget(self.cancel_button)
 
         widget_content = QtWidgets.QVBoxLayout()
@@ -219,39 +213,6 @@ class Entry(QtWidgets.QWidget):
         self.cancel_button.clicked.connect(self.cancel_process)
 
         self.dropdown_visibility()
-
-    def next_default_date(self, df):
-        df = df.str.split('-', expand=True)
-        df = df.sort_values(by=[0,1,2])
-        year = int(df.iloc[-1][0])
-        month = int(df.iloc[-1][1])
-        day = int(df.iloc[-1][2])
-
-        date = QtCore.QDate(year, month, day)
-        week_day = date.dayOfWeek()
-
-        if week_day in [2,3]:
-            date = date.addDays(4-week_day)
-        elif week_day == 1:
-            date = date.addDays(1)
-        elif week_day in [4,5,6,7]:
-            date = date.addDays(9-week_day)
-        
-        return date
-
-    def default_time(self, s):
-        week_day = self.date_field.date().dayOfWeek()
-
-        if week_day == 2:
-            if s == 'start':
-                return QtCore.QTime(7,0)
-            elif s == 'end':
-                return QtCore.QTime(13,0)
-        elif week_day == 4:
-            if s == 'start':
-                return QtCore.QTime(13,0)
-            elif s == 'end':
-                return QtCore.QTime(20,0)
 
 
     def add_to_grid(self, widget, configuration=None, vertical_start=None,
@@ -321,4 +282,64 @@ class Entry(QtWidgets.QWidget):
 
         self.save_entry_signal.emit(entry)
 
+
+
+
+class EntryAddView(_EntryView):
+
+    def __init__(self, work_dates_df):
+
+        super().__init__()
+
+
+    # Funktion zum eintragen des Titels
+        self.headline_label.setText("Eintrag bearbeiten")
+        self.date_field.setDate(self.next_default_date(work_dates_df))
+        self.start_time_field.setTime(self.default_time('start'))
+        self.end_time_field.setTime(self.default_time('end'))
+        self.vacation_checkbox.setChecked(False)
+        self.comment_textbox.setPlainText("")
+        self.wage_textbox.setText("10,00")
+        self.creation_date_text.setText("22.09.2020") ## Hier ändern
+        self.modification_date_text.setText("22.09.2020")
+        self.author_text.setText("Jordan")
+
+        self.delete_button.hide()
+
+
+    # Interface funktion für setzen der Werte
+
+    # Funktion zum setzen der Sichbarkeit des Löschenbuttons
+
+    def next_default_date(self, df):
+        df = df.str.split('-', expand=True)
+        df = df.sort_values(by=[0,1,2])
+        year = int(df.iloc[-1][0])
+        month = int(df.iloc[-1][1])
+        day = int(df.iloc[-1][2])
+
+        date = QtCore.QDate(year, month, day)
+        week_day = date.dayOfWeek()
+
+        if week_day in [2,3]:
+            date = date.addDays(4-week_day)
+        elif week_day == 1:
+            date = date.addDays(1)
+        elif week_day in [4,5,6,7]:
+            date = date.addDays(9-week_day)
         
+        return date
+
+    def default_time(self, s):
+        week_day = self.date_field.date().dayOfWeek()
+
+        if week_day == 2:
+            if s == 'start':
+                return QtCore.QTime(7,0)
+            elif s == 'end':
+                return QtCore.QTime(13,0)
+        elif week_day == 4:
+            if s == 'start':
+                return QtCore.QTime(13,0)
+            elif s == 'end':
+                return QtCore.QTime(20,0)

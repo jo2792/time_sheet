@@ -4,7 +4,7 @@ __copyright__ = "Copyright 2020"
 
 import sys
 from PySide2 import QtWidgets, QtCore, QtGui
-from CuQtWidgets.Entry import Entry
+from CuQtWidgets.EntryView import EntryAddView
 from CuQtWidgets.ContentArea import ContentArea
 from CuQtWidgets.MonthOverview import MonthOverview
 import data_interface
@@ -49,7 +49,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.entry_widget.remove_widget()
         else:
             self.entry_widget_is_shown = True
-            self.entry_widget = Entry(self.data.df['Work Date'], is_add_widget)
+            self.entry_widget = EntryAddView(self.data.df['Work Date'])
             self.layout.addWidget(self.entry_widget, stretch= 3)
             self.entry_widget.close_signal.connect(self.change_entry_widget_visibility)
             self.entry_widget.save_entry_signal.connect(self.data.add_entry)
