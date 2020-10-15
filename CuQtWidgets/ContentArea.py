@@ -3,7 +3,7 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 
 class EntryOverview(QtWidgets.QGraphicsView):
-    editClicked = QtCore.Signal(int)
+    editClicked = QtCore.Signal(list)
 
     def __init__(self, data):
         super().__init__()
@@ -59,6 +59,7 @@ class EntryOverview(QtWidgets.QGraphicsView):
         sum_duration = 0
         sum_earnings = 0
 
+        self.l = []
         for index, row in data.df.iterrows():
             entry_date_text = scene.addText(self.format_date(row['Work Date']))
             entry_date_text.setPos(self.center_text(entry_date_text,10,535),self.vertical_line_pos+text_centering_margin)
@@ -76,6 +77,10 @@ class EntryOverview(QtWidgets.QGraphicsView):
             entry_earnings_text.setFont(QtGui.QFont('SansSerif', pointSize=23))
             sum_earnings += earning
             
+            click_area = scene.addRect(10,self.vertical_line_pos,1110,45)
+
+            self.l.append({'Object': click_area, 'Row_Nr': index, 'Data': row})
+
             self.vertical_line_pos += 45
             scene.addLine(10,self.vertical_line_pos,1120,self.vertical_line_pos, default_pen)
 
@@ -189,20 +194,20 @@ class EntryOverview(QtWidgets.QGraphicsView):
 
         position = event.pos()
     
-        print(f"Positions: {position.x()}, {position.y()}")
+        # print(f"Positions: {position.x()}, {position.y()}")
 
-        if position.y() <= 306:
-            print("Überhalb der Tabelle!")
-        elif position.y() > self.vertical_line_pos+100:
-            print("Unterhalb der Tabelle!")
-        else:
-            zeile = int((position.y() - 306) / 45)
-            print(f"Zeile {zeile}")
-            self.editClicked.emit(zeile)
+        obj = self.itemAt(event.pos())
+        row_obj = self.l[[item['Object'] for item in self.l].index(obj)]
+        row_number = row_obj['Row_Nr']
+
+        # print(obj)
+        # print(row_number)  
+       
+        self.editClicked.emit([row_obj['Data'], row_number])
 
 class ContentArea(QtWidgets.QWidget):
 
-    addClicked = QtCore.Signal(bool)
+    addClicked = QtCore.Signal()
     button_state = 1
  
     def __init__(self, data):
@@ -285,7 +290,7 @@ class ContentArea(QtWidgets.QWidget):
 
     def add_test(self):
         if self.button_state:
-            self.addClicked.emit(True)
+            self.addClicked.emit()
 
     def switch_button_state(self):
         self.button_state += 1

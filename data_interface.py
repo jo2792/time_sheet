@@ -59,49 +59,36 @@ class Database():
         if not isinstance(entry, Entry):
             raise TypeError
         
-        self.df.iloc[entry_index] = entry.to_dict()           
+        self.df.update(pd.DataFrame(entry.to_dict(),index=[entry_index]))    
+
+        self.save()   
 
 class Entry():
 
-    def __init__(self, db_entry= None):
+    def __init__(self):
         
-        if db_entry: #dict convert Contructor
-            self.__creation_date = datetime.datetime.fromisoformat(db_entry['Creation Date'])
-            self.__modification_date = datetime.datetime.fromisoformat(db_entry['Modification Date'])
-            self.__author = db_entry['Author']
-    
-            self.__work_date = datetime.date.fromisoformat(db_entry['Work Date'])
-            self.__start_time = datetime.time.fromisoformat(db_entry['Start Time'])
-            self.__end_time = datetime.time.fromisoformat(db_entry['End Time'])
-    
-            self.__hourly_wage = db_entry['Hourly Wage']
-            self.__is_vacation = bool(db_entry['Is Vacation'])
-    
-            self.__comment = db_entry['Comment']
-
-        else: #default Constructor
-            date = datetime.datetime.now()
-            self.__creation_date = date
-            self.__modification_date = date
-            self.__author = "John Doe"
-            
-            self.__work_date = datetime.date(1900,1,1)
-            
-            self.__start_time = datetime.time(0,0)
-            self.__end_time = datetime.time(0,0)
-
-            self.__hourly_wage = 0.00
-            self.__is_vacation = False
-
-            self.__comment = " "
+        self.__creation_date = 'yyyy-MM-dd hh:mm:ss'
+        self.__modification_date = 'yyyy-MM-dd hh:mm:ss'
+        self.__author = "John Doe"
+        
+        self.__work_date = datetime.date(1900,1,1)
+        
+        self.__start_time = datetime.time(0,0)
+        self.__end_time = datetime.time(0,0)
+        self.__hourly_wage = 0.00
+        self.__is_vacation = False
+        self.__comment = " "
 
     @property
     def creation_date(self):
         return self.__creation_date
 
     @creation_date.setter
-    def creation_date(self, _):
-        print("The creation date can't be changed!")
+    def creation_date(self, date):
+        if self.creation_date != 'yyyy-MM-dd hh:mm:ss':
+            raise ValueError('Creation date is already set!')
+        else:
+            self.__creation_date = date
 
     @property
     def modification_date(self):
@@ -132,8 +119,7 @@ class Entry():
 
     @work_date.setter
     def work_date(self, date):
-        day, month, year = date
-        self.__work_date = datetime.date(year, month, day)
+        self.__work_date = date
         self.__update_modification_date()
 
     @property
@@ -142,8 +128,7 @@ class Entry():
 
     @start_time.setter
     def start_time(self, time):
-        hour, minute = time
-        self.__start_time = datetime.time(hour, minute)
+        self.__start_time = time
         self.__update_modification_date()
 
     @property
@@ -152,8 +137,7 @@ class Entry():
 
     @end_time.setter
     def end_time(self, time):
-        hour, minute = time
-        self.__end_time = datetime.time(hour, minute)
+        self.__end_time = time
         self.__update_modification_date()
 
     @property
@@ -194,12 +178,12 @@ class Entry():
 
     def to_dict(self):
         
-        return { "Creation Date": self.creation_date.isoformat(),
-                    "Modification Date": self.modification_date.isoformat(),
+        return { "Creation Date": self.creation_date,
+                    "Modification Date": self.modification_date.strftime('%Y-%m-%d %H:%M'),
                     "Author": self.author,
-                    "Work Date": self.work_date.isoformat(),
-                    "Start Time": self.start_time.isoformat(),
-                    "End Time": self.end_time.isoformat(),
+                    "Work Date": self.work_date,
+                    "Start Time": self.start_time,
+                    "End Time": self.end_time,
                     "Hourly Wage": self.hourly_wage,
                     "Is Vacation": self.is_vacation,
                     "Comment": self.comment}

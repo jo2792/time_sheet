@@ -88,15 +88,17 @@ class _EntryView(QtWidgets.QWidget):
         
         # creation date
         self.creation_date_label = set_default_label_style(QtWidgets.QLabel("Erstelldatum:"))
-        self.creation_date_text = set_default_field_style(QtWidgets.QLineEdit())
+        self.creation_date_text = set_default_field_style(QtWidgets.QDateTimeEdit())
         self.creation_date_text.setReadOnly(True)
-        self.creation_date_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
+        self.creation_date_text.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.creation_date_text.setStyleSheet("QDateTimeEdit {background: rgb(220, 220, 220) }")
 
         # modification date
         self.modification_date_label = set_default_label_style(QtWidgets.QLabel("Änderungsdatum:"))
-        self.modification_date_text = set_default_field_style(QtWidgets.QLineEdit())
+        self.modification_date_text = set_default_field_style(QtWidgets.QDateTimeEdit())
         self.modification_date_text.setReadOnly(True)
-        self.modification_date_text.setStyleSheet("QLineEdit {background: rgb(220, 220, 220) }")
+        self.modification_date_text.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.modification_date_text.setStyleSheet("QDateTimeEdit {background: rgb(220, 220, 220) }")
 
         # author
         self.author_label = set_default_label_style(QtWidgets.QLabel("Autor:"))
@@ -270,15 +272,18 @@ class _EntryView(QtWidgets.QWidget):
         self.deleteLater()
 
     def save_entry(self):
+
         entry = db_Entry()
-        
+
+        entry.creation_date = self.creation_date_text.text()
         entry.author = self.author_text.text()
-        entry.work_date = (self.date_field.date().day(), self.date_field.date().month(), self.date_field.date().year())
-        entry.start_time = (self.start_time_field.time().hour(), self.start_time_field.time().minute())
-        entry.end_time = (self.end_time_field.time().hour(), self.end_time_field.time().minute())
+        entry.work_date = self.date_field.date().toString('yyyy-MM-dd')
+        entry.start_time = self.start_time_field.time().toString('hh:mm')
+        entry.end_time = self.end_time_field.time().toString('hh:mm')
         entry.hourly_wage = float(self.wage_textbox.text().replace(' €','').replace(',','.'))
         entry.is_vacation = self.vacation_checkbox.isChecked()
         entry.comment = self.comment_textbox.toPlainText()
+
 
         self.save_entry_signal.emit(entry)
 
@@ -293,15 +298,15 @@ class EntryAddView(_EntryView):
 
 
     # Funktion zum eintragen des Titels
-        self.headline_label.setText("Eintrag bearbeiten")
+        self.headline_label.setText("Eintrag hinzufügen")
         self.date_field.setDate(self.next_default_date(work_dates_df))
         self.start_time_field.setTime(self.default_time('start'))
         self.end_time_field.setTime(self.default_time('end'))
         self.vacation_checkbox.setChecked(False)
-        self.comment_textbox.setPlainText("")
+        self.comment_textbox.setPlainText(" ")
         self.wage_textbox.setText("10,00")
-        self.creation_date_text.setText("22.09.2020") ## Hier ändern
-        self.modification_date_text.setText("22.09.2020")
+        self.creation_date_text.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.modification_date_text.setDateTime(QtCore.QDateTime.currentDateTime())
         self.author_text.setText("Jordan")
 
         self.delete_button.hide()
@@ -343,3 +348,21 @@ class EntryAddView(_EntryView):
                 return QtCore.QTime(13,0)
             elif s == 'end':
                 return QtCore.QTime(20,0)
+
+
+class EntryEditView(_EntryView):
+
+    def __init__(self, df):
+
+        super().__init__()
+
+        self.headline_label.setText("Eintrag bearbeiten")
+        self.date_field.setDate(QtCore.QDate.fromString(df['Work Date'],"yyyy-MM-dd"))
+        self.start_time_field.setTime(QtCore.QTime.fromString(df['Start Time']))
+        self.end_time_field.setTime(QtCore.QTime.fromString(df['End Time']))
+        self.vacation_checkbox.setChecked(bool(df['Is Vacation']))
+        self.comment_textbox.setPlainText(df['Comment'])
+        self.wage_textbox.setText(str(df['Hourly Wage']))
+        self.creation_date_text.setDateTime(QtCore.QDateTime.fromString(df['Creation Date'],'yyyy-MM-dd hh:mm'))
+        self.modification_date_text.setDateTime(QtCore.QDateTime.fromString(df['Modification Date'],'yyyy-MM-dd hh:mm'))
+        self.author_text.setText(df['Author'])

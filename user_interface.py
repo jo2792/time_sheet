@@ -4,7 +4,7 @@ __copyright__ = "Copyright 2020"
 
 import sys
 from PySide2 import QtWidgets, QtCore, QtGui
-from CuQtWidgets.EntryView import EntryAddView
+from CuQtWidgets.EntryView import EntryAddView, EntryEditView
 from CuQtWidgets.ContentArea import ContentArea
 from CuQtWidgets.MonthOverview import MonthOverview
 import data_interface
@@ -25,7 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.content_area.setMaximumHeight(999)
 
         self.content_area.addClicked.connect(self.change_entry_widget_visibility)
-        self.content_area.entry_overview_widget.editClicked.connect(self.Test)
+        self.content_area.entry_overview_widget.editClicked.connect(self.change_entry_widget_visibility)
         
         self.layout = QtWidgets.QHBoxLayout()
         self.layout.addWidget(self.month_overview_widget)
@@ -41,7 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def Test(self,numb):
         print(numb)
 
-    def change_entry_widget_visibility(self, is_add_widget=True):
+    def change_entry_widget_visibility(self, current_values=None):
         self.content_area.switch_button_state()
         if self.entry_widget_is_shown:
             self.entry_widget_is_shown= False
@@ -49,10 +49,16 @@ class MainWindow(QtWidgets.QMainWindow):
             self.entry_widget.remove_widget()
         else:
             self.entry_widget_is_shown = True
-            self.entry_widget = EntryAddView(self.data.df['Work Date'])
+
+            if current_values:
+                self.entry_widget = EntryEditView(current_values[0])
+                self.entry_widget.save_entry_signal.connect(lambda x: self.data.replace_entry(current_values[1],x))
+            else:
+                self.entry_widget = EntryAddView(self.data.df['Work Date'])
+                self.entry_widget.save_entry_signal.connect(self.data.add_entry)
+                
             self.layout.addWidget(self.entry_widget, stretch= 3)
             self.entry_widget.close_signal.connect(self.change_entry_widget_visibility)
-            self.entry_widget.save_entry_signal.connect(self.data.add_entry)
 
         
 if __name__ == "__main__":
