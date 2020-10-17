@@ -53,9 +53,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if current_values:
                 self.entry_widget = EntryEditView(current_values[0])
                 self.entry_widget.save_entry_signal.connect(lambda x: self.data.replace_entry(current_values[1],x))
+                self.entry_widget.save_entry_signal.connect(lambda x: self.content_area.entry_overview_widget.update(self.data))
             else:
                 self.entry_widget = EntryAddView(self.data.df['Work Date'])
                 self.entry_widget.save_entry_signal.connect(self.data.add_entry)
+                self.entry_widget.save_entry_signal.connect(lambda x: self.content_area.entry_overview_widget.update(self.data))
                 
             self.layout.addWidget(self.entry_widget, stretch= 3)
             self.entry_widget.close_signal.connect(self.change_entry_widget_visibility)
